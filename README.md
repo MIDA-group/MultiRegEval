@@ -15,4 +15,4 @@
   - [PyTorch](https://github.com/NVlabs/MUNIT) (official)
   - [TensorFlow](https://github.com/taki0112/MUNIT-Tensorflow)
 
-<img src="https://raw.githubusercontent.com/taki0112/DRIT-Tensorflow/master/assets/comparison.png" alt="Comparison" style="zoom: 20%;" />
+<img src="https://raw.githubusercontent.com/taki0112/DRIT-Tensorflow/master/assets/comparison.png" alt="Comparison" style="zoom:20%;" />
