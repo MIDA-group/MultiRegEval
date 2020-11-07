@@ -14,8 +14,8 @@ from skimage import exposure
 
 # self-defined functions
 from utils.make_eliceiri_patches import dist_coords, tform_centred
-#from mi import register_mi
-#from sift import register_sift
+from mi import register_mi
+from sift import register_sift
 import sys
 sys.path.append(os.path.abspath("./alpha_amd"))
 import aamd
@@ -57,14 +57,20 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
         w=300 # patch width
         o=w//2 # offset: upper-left corner of patch
         data_root_fake='./Datasets/Balvan_patches_fake/fold1'
-        n_mi_res=1          # number of resolution level for MI
+        if 'MI' in method and method.replace('MI', '') != '':
+            n_mi_res=int(method.replace('MI', ''))          # number of resolution level for MI
+        else:
+            n_mi_res=1
         n_aAMD_iters=0.3    # factor of number of iterations for aAMD
     elif 'Zurich' in data_root:
         img_root='../Datasets/Balvan_1to4tiles'
         w=300 # patch width
         o=w//2 # offset: upper-left corner of patch
         data_root_fake='./Datasets/Zurich_patches_fake/fold1'
-        n_mi_res=1          # number of resolution level for MI
+        if 'MI' in method and method.replace('MI', '') != '':
+            n_mi_res=int(method.replace('MI', ''))          # number of resolution level for MI
+        else:
+            n_mi_res=1
         n_aAMD_iters=0.3    # factor of number of iterations for aAMD
     
     coords_ref = np.array(([0,0], [0,w], [w,w], [w,0]))
