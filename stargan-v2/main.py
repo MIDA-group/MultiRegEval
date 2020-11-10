@@ -88,7 +88,7 @@ def main(args):
                                                      num_workers=args.num_workers,
                                                      which='ref'))
         solver.test(loaders)
-    elif args.mode == 'test':
+    elif args.mode == 'eval':
         solver.evaluate()
     elif args.mode == 'align':
         from core.wing import align_faces
