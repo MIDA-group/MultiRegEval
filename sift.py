@@ -44,6 +44,11 @@ def draw_matches(img1, kp1, img2, kp2, matches, color=None):
 #        new_shape = (max(img1.shape[0], img2.shape[0]), img1.shape[1]+img2.shape[1], img1.shape[2])
 #    elif len(img1.shape) == 2:
 #        new_shape = (max(img1.shape[0], img2.shape[0]), img1.shape[1]+img2.shape[1])
+    if len(img1.shape) == 2:
+        img1 = np.repeat(img1.reshape(img1.shape[0], img1.shape[1], 1), 3, axis=-1)
+    if len(img2.shape) == 2:
+        img2 = np.repeat(img2.reshape(img2.shape[0], img2.shape[1], 1), 3, axis=-1)
+    
     new_shape = (max(img1.shape[0], img2.shape[0]), img1.shape[1]+img2.shape[1], 3)
     
     new_img = np.zeros(new_shape, type(img1.flat[0]))  
