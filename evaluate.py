@@ -81,9 +81,12 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
     
     if gan_name != '':
         assert data_root_fake, "data_root_fake must not be None when given gan_name."
-        assert gan_name in ['cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B'], (
-                "gan_name must be in 'cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B'")
-        if '_A' in gan_name:
+        assert gan_name in ['cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B', 'comir'], (
+                "gan_name must be in 'cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B', 'comir'")
+        if 'comir' in gan_name:
+            dir_A = f'{data_root_fake}/{os.path.split(data_root[:-1])[-1]}/{gan_name}_A/'
+            dir_B = f'{data_root_fake}/{os.path.split(data_root[:-1])[-1]}/{gan_name}_B/'
+        elif '_A' in gan_name:
             dir_B = f'{data_root_fake}/{os.path.split(data_root[:-1])[-1]}/{gan_name}/'
         elif '_B' in gan_name:
             dir_A = f'{data_root_fake}/{os.path.split(data_root[:-1])[-1]}/{gan_name}/'
@@ -191,8 +194,8 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
                     continue
                 coords_rec = aamd.transform_coords(t, coords_in=coords_trans, centre_patch=centre_patch)
             elif 'SIFT' in method:
-                img_src = cv2.imread(dir_src + f"{f_name}_T.{suffix_src.split('.')[-1]}", 0)
-                img_tar = cv2.imread(dir_tar + f"{f_name}_R.{suffix_tar.split('.')[-1]}", 0)
+#                img_src = cv2.imread(dir_src + f"{f_name}_T.{suffix_src.split('.')[-1]}", 0)
+#                img_tar = cv2.imread(dir_tar + f"{f_name}_R.{suffix_tar.split('.')[-1]}", 0)
                 # register
                 try:
                     img_match, img_rec, tform = register_sift(img_src, img_tar)
