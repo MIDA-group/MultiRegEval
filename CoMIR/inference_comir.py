@@ -222,8 +222,8 @@ if torch.cuda.is_available():
     device = torch.device('cuda')
     modelA.to(device)
     modelB.to(device)
-#    modelA.half()
-#    modelB.half()
+    modelA.half()
+    modelB.half()
 else:
     device = torch.device('cpu')
     modelA.to(device)
@@ -257,11 +257,49 @@ for i in range(int(np.ceil(N / batch_size))):
         batch.append(dset.get(j, augment=False))
         names.append(dset.get_name(j))
 
-    with torch.cuda.amp.autocast(): # pytorch>=1.6.0 required
+    if device.type == 'cuda' and torch.__version__ >= '1.6.0':
+        with torch.cuda.amp.autocast(): # pytorch>=1.6.0 required
+            batch = torch.tensor(np.stack(batch), device=device).permute(0, 3, 1, 2)
+        
+#            if device.type == 'cuda' and not use_AMP:
+#                batch = batch.half()
+        
+            padsz = 128
+            orig_shape = batch.shape
+            pad1 = compute_padding(batch.shape[-2])
+            pad2 = compute_padding(batch.shape[-1])
+        
+            padded_batch = F.pad(batch, (padsz, padsz+pad1, padsz, padsz + pad2), mode='reflect')
+            #newdim = (np.array(batch.shape[2:]) // 128) * 128
+            #L1 = modelA(batch[:, modA, :newdim[0], :newdim[1]])
+            #L2 = modelB(batch[:, modB, :newdim[0], :newdim[1]])
+            L1 = modelA(padded_batch[:, modA, :, :])
+            L2 = modelB(padded_batch[:, modB, :, :])
+            
+            L1 = L1[:, :, padsz:padsz+orig_shape[2], padsz:padsz+orig_shape[3]]
+            L2 = L2[:, :, padsz:padsz+orig_shape[2], padsz:padsz+orig_shape[3]]
+        
+            for j in range(len(batch)):#L1.shape[0]):
+                path1 = modA_out_path + names[j]
+                path2 = modB_out_path + names[j]
+                im1 = L1[j].permute(1, 2, 0).cpu().detach().numpy()
+                im2 = L2[j].permute(1, 2, 0).cpu().detach().numpy()
+
+                if apply_sigmoid:
+                    im1 = np.round(scipy.special.expit(im1) * 255).astype('uint8')
+                    im2 = np.round(scipy.special.expit(im2) * 255).astype('uint8')
+                    skio.imsave(path1, im1)
+                    skio.imsave(path2, im2)
+                else:
+                    skio.imsave(path1, im1)
+                    skio.imsave(path2, im2)
+                print(f'Encodeing... {idx}/{N}')
+                idx += 1
+    else:
         batch = torch.tensor(np.stack(batch), device=device).permute(0, 3, 1, 2)
     
-    #    if device.type == 'cuda':
-    #        batch = batch.half()
+        if device.type == 'cuda':
+            batch = batch.half()
     
         padsz = 128
         orig_shape = batch.shape

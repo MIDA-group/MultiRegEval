@@ -4,6 +4,13 @@
 
 
 
+## Dependencies
+
+[`environment.yml`](./environment.yml) includes the **full** list of packages used to run most of the experiments. Some packages might be unnecessary. And here are some exceptions:
+
+* For [StarGAN v2](https://github.com/clovaai/stargan-v2), please follow their [dependency list](https://github.com/clovaai/stargan-v2#software-installation).
+* For [CoMIR](https://github.com/MIDA-group/CoMIR), to reduce GPU memory usage, the inference on GPU requires `pytorch>=1.6` to use the [Automatic Mixed Precision package](https://pytorch.org/docs/stable/amp.html), otherwise it uses *half-precision*.
+
 ## Execution order
 
 ### Balvan's Data
@@ -132,6 +139,8 @@ python evaluate.py
 - [pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
 - [CycleGAN](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
 - [DRIT/DRIT++](https://github.com/HsinYingLee/DRIT) 
+- [StarGAN v2](https://github.com/clovaai/stargan-v2)
+- [CoMIR](https://github.com/MIDA-group/CoMIR)
 - MUNIT
   - [PyTorch](https://github.com/NVlabs/MUNIT) (official)
   - [TensorFlow](https://github.com/taki0112/MUNIT-Tensorflow)
