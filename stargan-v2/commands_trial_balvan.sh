@@ -25,7 +25,6 @@ CUDA_VISIBLE_DEVICES=$2 nohup python main.py --mode train --img_size 256 --num_d
 	--train_img_dir data/balvan/fold$1/train \
 	--val_img_dir data/balvan/fold$1/val \
 	--checkpoint_dir checkpoints/balvan_train_fold$1 \
-	--randcrop_prob 0.0 \
 	--batch_size 4 \
 	> ./checkpoints/balvan_train_fold$1/out.file 2>&1 &
 # 以上命令已运行

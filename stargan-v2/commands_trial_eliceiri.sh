@@ -15,7 +15,7 @@ mv ./datasets/eliceiri/train/B/e0_* datasets/eliceiri/val/B/
 ### Train
 wait
 # here input&output sizes are fixed to 1
-CUDA_VISIBLE_DEVICES=0 nohup python main.py --mode train --img_size 256 --num_domains 2 --w_hpf 0 --train_img_dir datasets/eliceiri/train --val_img_dir datasets/eliceiri/val --checkpoint_dir checkpoints/eliceiri_star2_train --randcrop_prob 0.0 --batch_size 4 > ./checkpoints/eliceiri_star2_train/out.file 2>&1 &
+CUDA_VISIBLE_DEVICES=0 nohup python main.py --mode train --img_size 256 --num_domains 2 --w_hpf 0 --train_img_dir datasets/eliceiri/train --val_img_dir datasets/eliceiri/val --checkpoint_dir checkpoints/eliceiri_star2_train --batch_size 4 > ./checkpoints/eliceiri_star2_train/out.file 2>&1 &
 # 以上命令已运行
 
 # wait

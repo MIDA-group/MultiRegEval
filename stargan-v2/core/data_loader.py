@@ -22,6 +22,7 @@ from torch.utils import data
 from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
+from imgaug import augmenters as iaa
 
 
 def listdir(dname):
@@ -90,19 +91,27 @@ def get_train_loader(root, which='source', img_size=256,
     print('Preparing DataLoader to fetch %s images '
           'during the training phase...' % which)
 
-    crop = transforms.RandomResizedCrop(
-        img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
-    rand_crop = transforms.Lambda(
-        lambda x: crop(x) if random.random() < prob else x)
-
+#    crop = transforms.RandomResizedCrop(
+#        img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
+#    rand_crop = transforms.Lambda(
+#        lambda x: crop(x) if random.random() < prob else x)
+#
+#    transform = transforms.Compose([
+#        rand_crop,
+#        transforms.Resize([img_size, img_size]),
+#        transforms.RandomHorizontalFlip(),
+#        transforms.ToTensor(),
+#        transforms.Normalize(mean=[0.5, 0.5, 0.5],
+#                             std=[0.5, 0.5, 0.5]),
+#    ])
     transform = transforms.Compose([
-        rand_crop,
-        transforms.Resize([img_size, img_size]),
-        transforms.RandomHorizontalFlip(),
+        ImgAugTransform(img_size), 
+        lambda x: Image.fromarray(x),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5],
                              std=[0.5, 0.5, 0.5]),
     ])
+
 
     if which == 'source':
         dataset = ImageFolder(root, transform)
@@ -225,6 +234,18 @@ def __pad(img, d):
         img_pad = np.pad(img, ((wl, wr), (hl, hr), (0, 0)), 'reflect')
     return Image.fromarray(img_pad)
 
+class ImgAugTransform:
+    def __init__(self, crop_size):
+        self.aug = iaa.Sequential([
+            iaa.CropToFixedSize(crop_size, crop_size),
+            iaa.Fliplr(0.5),
+            iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+            iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+        ])
+      
+    def __call__(self, img):
+        img = np.array(img)
+        return self.aug.augment_image(img)
 # =============================================================================
 # =============================================================================
 
