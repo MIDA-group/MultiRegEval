@@ -53,7 +53,7 @@ done
 for tlevel in {1..4}; do
 	mkdir checkpoints/zurich_cyc_tlevel${tlevel}_fold1
 	cp checkpoints/zurich_cyc_train_fold1/latest_net_* checkpoints/zurich_cyc_tlevel${tlevel}_fold1
-	python test.py --dataroot ./datasets/zurich_patches_cyc/fold1/tlevel${tlevel}/ --name zurich_cyc_tlevel${tlevel}_fold1 --model cycle_gan --num_test 99999 --batch_size 1 --preprocess pad --divisor 256 --gpu_ids 1
+	python test.py --dataroot ./datasets/zurich_patches_cyc/fold1/tlevel${tlevel}/ --name zurich_cyc_tlevel${tlevel}_fold1 --model cycle_gan --num_test 99999 --batch_size 4 --preprocess pad --divisor 256 --gpu_ids 1
 
 	# # unpad results
 	# python ../utils/unpad_results.py -p ./results/zurich_cyc_tlevel${tlevel}_fold1/test_latest/images --width 300 --height 300

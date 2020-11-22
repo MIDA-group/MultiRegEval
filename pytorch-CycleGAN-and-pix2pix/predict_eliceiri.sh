@@ -53,7 +53,7 @@ done
 for tlevel in {1..4}; do
 	mkdir checkpoints/eliceiri_cyc_tlevel${tlevel}
 	cp checkpoints/eliceiri_cyc_train/latest_net_* checkpoints/eliceiri_cyc_tlevel${tlevel}
-	python test.py --dataroot ./datasets/eliceiri_patches_cyc/tlevel${tlevel}/ --name eliceiri_cyc_tlevel${tlevel} --model cycle_gan --num_test 99999 --batch_size 1 --preprocess pad --divisor 256 --gpu_ids 1
+	python test.py --dataroot ./datasets/eliceiri_patches_cyc/tlevel${tlevel}/ --name eliceiri_cyc_tlevel${tlevel} --model cycle_gan --num_test 99999 --batch_size 4 --preprocess pad --divisor 256 --gpu_ids 1
 
 	# # unpad results
 	# python ../utils/unpad_results.py -p ./results/eliceiri_cyc_tlevel${tlevel}/test_latest/images --width 834 --height 834

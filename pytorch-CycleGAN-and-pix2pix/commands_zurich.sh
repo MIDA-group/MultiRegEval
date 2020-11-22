@@ -14,10 +14,10 @@
 python datasets/combine_A_and_B.py --fold_A ../Datasets/Zurich_temp/fold$1/A --fold_B ../Datasets/Zurich_temp/fold$1/B --fold_AB ./datasets/zurich_train/fold$1
 
 ## Train
-nohup python train.py --display_id -1 --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --serial_batches --load_size 256 --crop_size 256 --batch_size 64 --gpu_ids $2 > out_a2b.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --load_size 256 --crop_size 256 --batch_size 64 --gpu_ids $2 > out_a2b.file 2>&1 &
 wait
 # Training log at ./checkpoints/zurich_p2p_train_fold$1_a2b/loss_log.txt
-nohup python train.py --display_id -1 --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --serial_batches --load_size 256 --crop_size 256 --batch_size 64 --gpu_ids $2 > out_b2a.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --load_size 256 --crop_size 256 --batch_size 64 --gpu_ids $2 > out_b2a.file 2>&1 &
 wait
 # 以上命令已运行
 
@@ -45,7 +45,7 @@ cp -r ../Datasets/Zurich_temp/fold$1/A/test/ ./datasets/zurich_cyc_train/fold$1/
 cp -r ../Datasets/Zurich_temp/fold$1/B/test/ ./datasets/zurich_cyc_train/fold$1/testB
 ### Train
 wait
-nohup python train.py --display_id -1 --dataroot ./datasets/zurich_cyc_train/fold$1 --name zurich_cyc_train_fold$1 --model cycle_gan --serial_batches --load_size 256 --crop_size 256 --batch_size 1 --gpu_ids $2 > out.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/zurich_cyc_train/fold$1 --name zurich_cyc_train_fold$1 --model cycle_gan --preprocess mix --load_size 256 --crop_size 256 --batch_size 4 --gpu_ids $2 > out.file 2>&1 &
 # batch_size can only be 1 if using single GPU
 # Training log at ./checkpoints/zurich_cyc_train_fold$1/loss_log.txt
 # 以上命令已运行
@@ -53,7 +53,7 @@ nohup python train.py --display_id -1 --dataroot ./datasets/zurich_cyc_train/fol
 # wait
 
 # ### Test
-# python test.py --dataroot ./datasets/zurich_cyc_train/fold$1/ --name zurich_cyc_train_fold$1 --model cycle_gan --num_test 99999 --batch_size 1 --preprocess pad --divisor 256 --gpu_ids $2
+# python test.py --dataroot ./datasets/zurich_cyc_train/fold$1/ --name zurich_cyc_train_fold$1 --model cycle_gan --num_test 99999 --batch_size 4 --preprocess pad --divisor 256 --gpu_ids $2
 
 ### unpad results
 # python ../utils/unpad_results.py -p ./results/zurich_cyc_train_fold$1/test_latest/images --width 600 --height 600

@@ -8,7 +8,7 @@ import torch.utils.data as data
 from PIL import Image
 import torchvision.transforms as transforms
 from abc import ABC, abstractmethod
-
+from imgaug import augmenters as iaa
 
 class BaseDataset(data.Dataset, ABC):
     """This class is an abstract base class (ABC) for datasets.
@@ -97,14 +97,21 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
     if opt.preprocess == 'none':
         transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=4, method=method)))
 
-    if not opt.no_flip:
+    if opt.preprocess == 'pad':
+        transform_list.append(transforms.Lambda(lambda img: __pad(img, opt.divisor)))
+    elif not opt.no_flip:
         if params is None:
             transform_list.append(transforms.RandomHorizontalFlip())
         elif params['flip']:
             transform_list.append(transforms.Lambda(lambda img: __flip(img, params['flip'])))
 
-    if opt.preprocess == 'pad':
-        transform_list.append(transforms.Lambda(lambda img: __pad(img, opt.divisor)))
+    if opt.preprocess == 'mix':
+        transform_list = [
+            ImgAugTransform(opt), 
+            lambda x: Image.fromarray(x),
+            ]
+        if grayscale:
+            transform_list.insert(0, transforms.Grayscale(1))
 
     if convert:
         transform_list += [transforms.ToTensor()]
@@ -173,3 +180,16 @@ def __print_size_warning(ow, oh, w, h):
               "(%d, %d). This adjustment will be done to all images "
               "whose sizes are not multiples of 4" % (ow, oh, w, h))
         __print_size_warning.has_printed = True
+
+class ImgAugTransform:
+  def __init__(self, opt):
+    self.aug = iaa.Sequential([
+        iaa.CropToFixedSize(opt.crop_size,opt.crop_size),
+        iaa.Fliplr(0.5),
+        iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+        iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+    ])
+      
+  def __call__(self, img):
+    img = np.array(img)
+    return self.aug.augment_image(img)
