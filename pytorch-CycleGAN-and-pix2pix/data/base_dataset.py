@@ -182,14 +182,14 @@ def __print_size_warning(ow, oh, w, h):
         __print_size_warning.has_printed = True
 
 class ImgAugTransform:
-  def __init__(self, opt):
-    self.aug = iaa.Sequential([
-        iaa.CropToFixedSize(opt.crop_size,opt.crop_size),
-        iaa.Fliplr(0.5),
-        iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
-        iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
-    ])
+    def __init__(self, opt):
+        self.aug = iaa.Sequential([
+            iaa.CropToFixedSize(opt.crop_size,opt.crop_size),
+            iaa.Fliplr(0.5),
+            iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+            iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+        ])
       
-  def __call__(self, img):
-    img = np.array(img)
-    return self.aug.augment_image(img)
+    def __call__(self, img):
+        img = np.array(img)
+        return self.aug.augment_image(img)

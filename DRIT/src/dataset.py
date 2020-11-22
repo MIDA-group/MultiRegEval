@@ -2,6 +2,8 @@ import os
 import torch.utils.data as data
 from PIL import Image
 from torchvision.transforms import Compose, Resize, RandomCrop, CenterCrop, RandomHorizontalFlip, ToTensor, Normalize
+import numpy as np
+from imgaug import augmenters as iaa
 import random
 
 class dataset_single(data.Dataset):
@@ -56,13 +58,18 @@ class dataset_unpair(data.Dataset):
     self.input_dim_B = opts.input_dim_b
 
     # setup image transformation
-    transforms = [Resize((opts.resize_size, opts.resize_size), Image.BICUBIC)]
     if opts.phase == 'train':
-      transforms.append(RandomCrop(opts.crop_size))
+      # transforms.append(RandomCrop(opts.crop_size))
+      transforms = [
+        # Resize((opts.resize_size, opts.resize_size), Image.BICUBIC),
+        ImgAugTransform(opts), 
+        lambda x: Image.fromarray(x),
+        ]
     else:
+      transforms = [Resize((opts.resize_size, opts.resize_size), Image.BICUBIC)]
       transforms.append(CenterCrop(opts.crop_size))
-    if not opts.no_flip:
-      transforms.append(RandomHorizontalFlip())
+      if not opts.no_flip:
+        transforms.append(RandomHorizontalFlip())
     transforms.append(ToTensor())
     transforms.append(Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]))
     self.transforms = Compose(transforms)
@@ -88,3 +95,16 @@ class dataset_unpair(data.Dataset):
 
   def __len__(self):
     return self.dataset_size
+
+class ImgAugTransform:
+  def __init__(self, opts):
+    self.aug = iaa.Sequential([
+      iaa.CropToFixedSize(opts.crop_size,opts.crop_size),
+      iaa.Fliplr(0.5),
+      iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+      iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+    ])
+      
+  def __call__(self, img):
+    img = np.array(img)
+    return self.aug.augment_image(img)
