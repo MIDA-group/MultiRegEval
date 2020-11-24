@@ -12,19 +12,19 @@
 # # python ../utils/prepare_Eliceiri.py
 
 # 以上命令已运行
-python datasets/combine_A_and_B.py --fold_A ../Datasets/Eliceiri_temp/A --fold_B ../Datasets/Eliceiri_temp/B --fold_AB ./datasets/eliceiri_train
+python datasets/combine_A_and_B.py --fold_A ../Datasets/Eliceiri_temp/A --fold_B ../Datasets/Eliceiri_temp/B --fold_AB ./datasets/eliceiri_p2p_train
 
 
 ## Train
-nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids 1 > out_a2b.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_p2p_train --name eliceiri_p2p_train_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids 1 > out_a2b.file 2>&1 &
 wait
 # Training log at ./checkpoints/eliceiri_p2p_train_a2b/loss_log.txt
-nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids 1 > out_b2a.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_p2p_train --name eliceiri_p2p_train_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids 1 > out_b2a.file 2>&1 &
 wait
 
 # ## Test
-# python test.py --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_a2b --model pix2pix --num_test 99999 --direction AtoB --input_nc 1 --output_nc 3 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids 1
-# python test.py --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_b2a --model pix2pix --num_test 99999 --direction BtoA --input_nc 3 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids 1
+# python test.py --dataroot ./datasets/eliceiri_p2p_train --name eliceiri_p2p_train_a2b --model pix2pix --num_test 99999 --direction AtoB --input_nc 1 --output_nc 3 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids 1
+# python test.py --dataroot ./datasets/eliceiri_p2p_train --name eliceiri_p2p_train_b2a --model pix2pix --num_test 99999 --direction BtoA --input_nc 3 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids 1
 
 # ### unpad results
 # python ../utils/unpad_results.py -p ./results/eliceiri_p2p_train_a2b/test_latest/images --width 834 --height 834

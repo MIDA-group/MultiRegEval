@@ -11,18 +11,18 @@
 # cd pytorch-CycleGAN-and-pix2pix/
 
 
-python datasets/combine_A_and_B.py --fold_A ../Datasets/Balvan_temp/fold$1/A --fold_B ../Datasets/Balvan_temp/fold$1/B --fold_AB ./datasets/balvan_train/fold$1
+python datasets/combine_A_and_B.py --fold_A ../Datasets/Balvan_temp/fold$1/A --fold_B ../Datasets/Balvan_temp/fold$1/B --fold_AB ./datasets/balvan_p2p_train/fold$1
 
 ## Train
-nohup python train.py --display_id -1 --dataroot ./datasets/balvan_train/fold$1 --name balvan_p2p_train_fold$1_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_a2b.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/balvan_p2p_train/fold$1 --name balvan_p2p_train_fold$1_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_a2b.file 2>&1 &
 # Training log at ./checkpoints/balvan_p2p_train_fold$1_a2b/loss_log.txt
 wait
-nohup python train.py --display_id -1 --dataroot ./datasets/balvan_train/fold$1 --name balvan_p2p_train_fold$1_b2a --model pix2pix --direction BtoA --input_nc 1 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_b2a.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/balvan_p2p_train/fold$1 --name balvan_p2p_train_fold$1_b2a --model pix2pix --direction BtoA --input_nc 1 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_b2a.file 2>&1 &
 wait
 
 # ## Test
-# python test.py --dataroot ./datasets/balvan_train/fold$1 --name balvan_p2p_train_fold$1_a2b --model pix2pix --num_test 99999 --direction AtoB --input_nc 1 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
-# python test.py --dataroot ./datasets/balvan_train/fold$1 --name balvan_p2p_train_fold$1_b2a --model pix2pix --num_test 99999 --direction BtoA --input_nc 1 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
+# python test.py --dataroot ./datasets/balvan_p2p_train/fold$1 --name balvan_p2p_train_fold$1_a2b --model pix2pix --num_test 99999 --direction AtoB --input_nc 1 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
+# python test.py --dataroot ./datasets/balvan_p2p_train/fold$1 --name balvan_p2p_train_fold$1_b2a --model pix2pix --num_test 99999 --direction BtoA --input_nc 1 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
 
 # ### unpad results
 # python ../utils/unpad_results.py -p ./results/balvan_p2p_train_fold$1_a2b/test_latest/images --width 600 --height 600

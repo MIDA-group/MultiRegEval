@@ -11,20 +11,20 @@
 # cd pytorch-CycleGAN-and-pix2pix/
 # # python ../utils/prepare_Zurich.py
 
-python datasets/combine_A_and_B.py --fold_A ../Datasets/Zurich_temp/fold$1/A --fold_B ../Datasets/Zurich_temp/fold$1/B --fold_AB ./datasets/zurich_train/fold$1
+python datasets/combine_A_and_B.py --fold_A ../Datasets/Zurich_temp/fold$1/A --fold_B ../Datasets/Zurich_temp/fold$1/B --fold_AB ./datasets/zurich_p2p_train/fold$1
 
 ## Train
-nohup python train.py --display_id -1 --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_a2b.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/zurich_p2p_train/fold$1 --name zurich_p2p_train_fold$1_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_a2b.file 2>&1 &
 wait
 # Training log at ./checkpoints/zurich_p2p_train_fold$1_a2b/loss_log.txt
-nohup python train.py --display_id -1 --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_b2a.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/zurich_p2p_train/fold$1 --name zurich_p2p_train_fold$1_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids $2 > out_b2a.file 2>&1 &
 wait
 # 以上命令已运行
 
 
 # ## Test
-# python test.py --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_a2b --model pix2pix --num_test 99999 --direction AtoB --input_nc 1 --output_nc 3 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
-# python test.py --dataroot ./datasets/zurich_train/fold$1 --name zurich_p2p_train_fold$1_b2a --model pix2pix --num_test 99999 --direction BtoA --input_nc 3 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
+# python test.py --dataroot ./datasets/zurich_p2p_train/fold$1 --name zurich_p2p_train_fold$1_a2b --model pix2pix --num_test 99999 --direction AtoB --input_nc 1 --output_nc 3 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
+# python test.py --dataroot ./datasets/zurich_p2p_train/fold$1 --name zurich_p2p_train_fold$1_b2a --model pix2pix --num_test 99999 --direction BtoA --input_nc 3 --output_nc 1 --batch_size 16 --preprocess pad --divisor 256 --gpu_ids $2
 
 ### unpad results
 # python ../utils/unpad_results.py -p ./results/zurich_p2p_train_fold$1_a2b/test_latest/images --width 600 --height 600
