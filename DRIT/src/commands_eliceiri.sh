@@ -1,7 +1,7 @@
 # Balvan's data
 
 ## Train
-nohup python train.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/eliceiri_cyc_train --batch_size 64 --resize_size 256 --crop_size 256 --name eliceiri_drit_train --concat 0 --n_ep 1200 --gpu 1 > ./outfiles/eliceiri.file 2>&1 &
+nohup python train.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/eliceiri_cyc_train --batch_size 64 --crop_size 256 --name eliceiri_drit_train --concat 0 --n_ep 1200 --gpu 1 > ./outfiles/eliceiri.file 2>&1 &
 
 
 ## Test

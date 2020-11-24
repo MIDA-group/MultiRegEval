@@ -109,6 +109,7 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
         transform_list = [
             ImgAugTransform(opt), 
             lambda x: Image.fromarray(x),
+            transforms.CenterCrop(opt.crop_size),
             ]
         if grayscale:
             transform_list.insert(0, transforms.Grayscale(1))
@@ -184,10 +185,10 @@ def __print_size_warning(ow, oh, w, h):
 class ImgAugTransform:
     def __init__(self, opt):
         self.aug = iaa.Sequential([
-            iaa.CropToFixedSize(opt.crop_size,opt.crop_size),
             iaa.Fliplr(0.5),
             iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
             iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+            # iaa.CropToFixedSize(opt.crop_size,opt.crop_size),
         ])
       
     def __call__(self, img):

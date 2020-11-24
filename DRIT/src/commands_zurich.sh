@@ -1,7 +1,7 @@
 # Zurich's data
 
 ## Train
-nohup python train.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/zurich_cyc_train/fold1 --batch_size 64 --resize_size 256 --crop_size 256 --name zurich_drit_train_fold1 --concat 1 --n_ep 1200 --gpu 1 > ./outfiles/zurich_fold1.file 2>&1 &
+nohup python train.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/zurich_cyc_train/fold1 --batch_size 64 --crop_size 256 --name zurich_drit_train_fold1 --concat 1 --n_ep 1200 --gpu 1 > ./outfiles/zurich_fold1.file 2>&1 &
 # 以上命令已运行
 
 

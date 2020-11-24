@@ -24,7 +24,7 @@ from tqdm import tqdm
 import cv2, shutil
 
 # %%
-
+num_workers=0
 # %%
 def pad_sample(img, d):
     # pad the image size to multiple of divisor d
@@ -80,8 +80,8 @@ class SlideDataset(Dataset):
                 dataset[file_id] = {}
 
             img = skio.imread(pathname)
-#            img = skimage.img_as_float(img)
-            img = skimage.img_as_ubyte(img)
+            img = skimage.img_as_float(img)
+#            img = skimage.img_as_ubyte(img)
 
             if file_type == "SHG":
                 img = np.log(1.+img)
@@ -96,8 +96,8 @@ class SlideDataset(Dataset):
                     np.block([
                         dataset[image_set]["SHG"],
                         dataset[image_set]["BF"]
-#                    ]).astype(np.float32)
-                    ]).astype(np.uint8)
+                    ]).astype(np.float32)
+#                    ]).astype(np.uint8)
                 )
             except ValueError:
                 print(f"Failed concatenating set {image_set}."
@@ -118,10 +118,10 @@ class ImgAugTransform:
     def __init__(self, testing=False):
         if not testing:
             self.aug = iaa.Sequential([
-                iaa.CropToFixedSize(256,256),
+                iaa.CropToFixedSize(362,362),
 #                iaa.size.Resize(128, interpolation='linear'),
-                iaa.Fliplr(0.5),
-                iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+                # iaa.Fliplr(0.5),
+                # iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
                 # iaa.Sometimes(0.2, iaa.OneOf([
                 #     #iaa.AdditiveGaussianNoise(loc=0, scale=(0., 0.05)),
                 #     iaa.GaussianBlur(sigma=(0, 1.0)),
@@ -180,7 +180,7 @@ def make_EliceiriP2P_train(src_dir, target_dir):
     dataloader_args = {
         "batch_size": batch_size,
         "shuffle": False,
-        "num_workers": 0,
+        "num_workers": num_workers,
         "pin_memory": True,
         "worker_init_fn": worker_init_fn,
     }
@@ -200,9 +200,11 @@ def make_EliceiriP2P_train(src_dir, target_dir):
             Bs = ABs[..., 1:]
             for j in range(batch_size):
                 skio.imsave(f'{target_dir}/A/train/e{epoch}_b{batch_idx}_{j}.tiff', 
-                            As[j])
+                            skimage.img_as_ubyte(As[j])
+                            )
                 skio.imsave(f'{target_dir}/B/train/e{epoch}_b{batch_idx}_{j}.tiff', 
-                            Bs[j])
+                            skimage.img_as_ubyte(Bs[j])
+                            )
     return
 
 # %%

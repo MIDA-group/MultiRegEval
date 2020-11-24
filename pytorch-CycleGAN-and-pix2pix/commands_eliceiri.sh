@@ -16,10 +16,10 @@ python datasets/combine_A_and_B.py --fold_A ../Datasets/Eliceiri_temp/A --fold_B
 
 
 ## Train
-nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --load_size 256 --crop_size 256 --batch_size 64 --gpu_ids 1 > out_a2b.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_a2b --model pix2pix --direction AtoB --input_nc 1 --output_nc 3 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids 1 > out_a2b.file 2>&1 &
 wait
 # Training log at ./checkpoints/eliceiri_p2p_train_a2b/loss_log.txt
-nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --load_size 256 --crop_size 256 --batch_size 64 --gpu_ids 1 > out_b2a.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_train --name eliceiri_p2p_train_b2a --model pix2pix --direction BtoA --input_nc 3 --output_nc 1 --n_epochs 100 --n_epochs_decay 100 --preprocess mix --crop_size 256 --batch_size 64 --gpu_ids 1 > out_b2a.file 2>&1 &
 wait
 
 # ## Test
@@ -47,7 +47,7 @@ cp -r ../Datasets/Eliceiri_temp/B/test/ ./datasets/eliceiri_cyc_train/testB
 ### Train
 wait
 # here input&output sizes are fixed to 1
-nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_cyc_train --name eliceiri_cyc_train --model cycle_gan --preprocess mix --load_size 256 --crop_size 256 --batch_size 4 --gpu_ids 1 > out.file 2>&1 &
+nohup python train.py --display_id -1 --dataroot ./datasets/eliceiri_cyc_train --name eliceiri_cyc_train --model cycle_gan --preprocess mix --crop_size 256 --batch_size 4 --gpu_ids 1 > out.file 2>&1 &
 # batch_size can only be 1 if using single GPU
 # Training log at ./checkpoints/eliceiri_cyc_train/loss_log.txt
 

@@ -107,6 +107,7 @@ def get_train_loader(root, which='source', img_size=256,
     transform = transforms.Compose([
         ImgAugTransform(img_size), 
         lambda x: Image.fromarray(x),
+        transforms.CenterCrop(img_size),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5],
                              std=[0.5, 0.5, 0.5]),
@@ -237,10 +238,10 @@ def __pad(img, d):
 class ImgAugTransform:
     def __init__(self, crop_size):
         self.aug = iaa.Sequential([
-            iaa.CropToFixedSize(crop_size, crop_size),
             iaa.Fliplr(0.5),
             iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
             iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+#            iaa.CropToFixedSize(crop_size, crop_size),
         ])
       
     def __call__(self, img):

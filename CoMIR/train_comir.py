@@ -198,15 +198,14 @@ tiramisu_args = {
 }
 # Epochs
 epochs = args['iterations']
+# How many unique patches are fed during one epoch
+samples_per_epoch = 1024
 # Batch size
-modifier = 4
-batch_size = 32//modifier
+batch_size = 8
 # Steps per epoch
-steps_per_epoch = 32*modifier
+steps_per_epoch = samples_per_epoch // batch_size
 # Number of steps
 steps = steps_per_epoch * epochs
-# How many unique patches are fed during one epoch
-samples_per_epoch = steps_per_epoch * batch_size
 
 num_workers = args['workers']
 # Optimiser
@@ -332,16 +331,16 @@ class ImgAugTransform:
     def __init__(self, testing=False):
         if not testing:
             self.aug = iaa.Sequential([
-                iaa.CropToFixedSize(128,128),
                 iaa.Fliplr(0.5),
                 iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
                 iaa.Sometimes(
                     0.5,
                     iaa.GaussianBlur(sigma=(0, 2.0))),
+                iaa.CenterCropToFixedSize(256,256),
             ])
         else:
             self.aug = iaa.Sequential([
-                iaa.CropToFixedSize(128,128),
+                iaa.CropToFixedSize(256,256),
             ])
 
     def __call__(self, img):

@@ -25,6 +25,7 @@ from tqdm import tqdm
 import cv2, shutil
 
 # %%
+num_workers=0
 def split_zurich_data(fold):
     if fold == 1:
         ids_test = {7, 9, 20, 3, 15, 18}
@@ -129,10 +130,10 @@ class ImgAugTransform:
     def __init__(self, testing=False):
         if not testing:
             self.aug = iaa.Sequential([
-                iaa.CropToFixedSize(256,256),
+                iaa.CropToFixedSize(362,362),
 #                iaa.size.Resize(128, interpolation='linear'),
-                iaa.Fliplr(0.5),
-                iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+                # iaa.Fliplr(0.5),
+                # iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
 #                iaa.Sometimes(0.2, iaa.OneOf([
 #                    #iaa.AdditiveGaussianNoise(loc=0, scale=(0., 0.05)),
 #                    iaa.GaussianBlur(sigma=(0, 1.0)),
@@ -198,7 +199,7 @@ def make_ZurichP2P_folds(src_dir, target_dir, fold):
     dataloader_args = {
         "batch_size": batch_size,
         "shuffle": False,
-        "num_workers": 0,
+        "num_workers": num_workers,
         "pin_memory": True,
         "worker_init_fn": worker_init_fn,
     }
