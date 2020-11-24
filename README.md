@@ -29,7 +29,6 @@ python ./utils/prepare_Balvan.py
 # make evaluation patches
 # Balvan -> Balvan_1to4tiles -> Balvan_patches (3 folds)
 python ./utils/make_balvan_patches.py
-
 ```
 
 - pix2pix and CycleGAN
@@ -72,6 +71,8 @@ python test_affine.py
 ```bash
 python evaluate.py
 ```
+
+------
 
 
 
@@ -126,7 +127,33 @@ python evaluate.py
 
 ------
 
+
+
 ### Eliceiri's Dada
+
+- Dataset preparation
+
+```bash
+# prepare training data for pix2pix and others
+# HighRes_Splits/CNN_Training/ -> Eliceiri_temp
+python ./utils/prepare_Eliceiri.py
+
+# make evaluation patches
+# HighRes_Splits/WSI/ -> Eliceiri_patches
+python ./utils/make_eliceiri_patches.py
+```
+
+- pix2pix and CycleGAN
+
+```bash
+# train and test 
+cd pytorch-CycleGAN-and-pix2pix/
+./commands_eliceiri.sh {gpu_id}
+
+# modality mapping of evaluation data
+# Eliceiri_patches -> Eliceiri_patches_fake
+./predict_eliceiri.sh
+```
 
 
 
