@@ -25,9 +25,11 @@ def dist_coords(coords1, coords2):
     return [sum((coords1[i] - coords2[i]) ** 2) ** 0.5 for i in range(len(coords1))]
     
 # %%
-def make_patches(wsi_root, target_root, trans_min=0, trans_max=20, rot_min=0, rot_max=5, mode='train', display=None):
-#    wsi_root='../Datasets/HighRes_Splits/WSI/'
-#    target_root='../Datasets/Eliceiri_patches/'
+def make_patches(img_root, target_root, fold=None, t_level=1, 
+#                 trans_min=0, trans_max=20, rot_min=0, rot_max=5, 
+                 mode='train', display=None):
+#    img_root='../Datasets/HighRes_Splits/WSI'
+#    target_root='../Datasets/Eliceiri_patches'
 #    trans_min=0
 #    trans_max=20
 #    rot_min=0
@@ -39,16 +41,23 @@ def make_patches(wsi_root, target_root, trans_min=0, trans_max=20, rot_min=0, ro
     
     coords_ref = np.array(([0,0], [0,w], [w,w], [w,0]))
     centre_patch = np.array((w, w)) / 2. - 0.5
+
+    step_trans = 20
+    step_rot = 5
+    trans_min = step_trans * (t_level - 1)
+    trans_max = step_trans * t_level
+    rot_min = step_rot * (t_level - 1)
+    rot_max = step_rot * t_level
     
     #modalities = {'MI':'SHG', 'WB':'BF'}
-    tardirA = target_root + f'patch_trans{trans_min}-{trans_max}_rot{rot_min}-{rot_max}/A/{mode}'
-    tardirB = target_root + f'patch_trans{trans_min}-{trans_max}_rot{rot_min}-{rot_max}/B/{mode}'
+    tardirA = f'{target_root}/patch_tlevel{t_level}/A/{mode}'
+    tardirB = f'{target_root}/patch_tlevel{t_level}/B/{mode}'
     if not os.path.exists(tardirA):
         os.makedirs(tardirA)
     if not os.path.exists(tardirB):
         os.makedirs(tardirB)
     
-    f_names = set(['_'.join(name.split('_')[:-1]) for name in os.listdir(wsi_root + mode)])
+    f_names = set(['_'.join(name.split('_')[:-1]) for name in os.listdir(f'{img_root}/{mode}')])
     f_names = list(f_names)
     f_names.sort()
     
@@ -72,8 +81,8 @@ def make_patches(wsi_root, target_root, trans_min=0, trans_max=20, rot_min=0, ro
         else:
             f_nameA = f_name + '_SHG.tif'
             f_nameB = f_name + '_BF.tif'
-        imgA = skio.imread(f'{wsi_root+mode}/{f_nameA}')
-        imgB = skio.imread(f'{wsi_root+mode}/{f_nameB}')
+        imgA = skio.imread(f'{img_root}/{mode}/{f_nameA}')
+        imgB = skio.imread(f'{img_root}/{mode}/{f_nameB}')
         
         # random transformation parameters
         rot_degree = random.choice((random.uniform(-rot_max, -rot_min), random.uniform(rot_min, rot_max)))
@@ -123,8 +132,8 @@ def make_patches(wsi_root, target_root, trans_min=0, trans_max=20, rot_min=0, ro
         
         # display patch outline in original image
         if display is not None and cnt_disp < display:
-            dispdirA = target_root + f'patch_trans{trans_min}-{trans_max}_rot{rot_min}-{rot_max}/display/A/{mode}'
-            dispdirB = target_root + f'patch_trans{trans_min}-{trans_max}_rot{rot_min}-{rot_max}/display/B/{mode}'
+            dispdirA = f'{target_root}/patch_tlevel{t_level}/display/A/{mode}'
+            dispdirB = f'{target_root}/patch_tlevel{t_level}/display/B/{mode}'
             if not os.path.exists(dispdirA):
                 os.makedirs(dispdirA)
             if not os.path.exists(dispdirB):
@@ -139,26 +148,26 @@ def make_patches(wsi_root, target_root, trans_min=0, trans_max=20, rot_min=0, ro
             skio.imsave(f'{dispdirB}/{f_name}_display.tif', imgB)
             cnt_disp += 1
     
-    df.to_csv(target_root + f'patch_trans{trans_min}-{trans_max}_rot{rot_min}-{rot_max}/info_{mode}.csv')
+    df.to_csv(f'{target_root}/patch_tlevel{t_level}/info_{mode}.csv')
 
 # %%
 if __name__ == '__main__':
-    trans_mins = list(range(0, 80, 20))
-    trans_maxs = list(range(20, 100, 20))
-    rot_mins = list(range(0, 20, 5))
-    rot_maxs = list(range(5, 25, 5))
-    for i in range(4):
+#    trans_mins = list(range(0, 80, 20))
+#    trans_maxs = list(range(20, 100, 20))
+#    rot_mins = list(range(0, 20, 5))
+#    rot_maxs = list(range(5, 25, 5))
+    for i in range(1, 5):
         make_patches(
-                wsi_root='../Datasets/HighRes_Splits/WSI/', 
-                target_root='../Datasets/Eliceiri_patches/',
-                trans_min=trans_mins[i], trans_max=trans_maxs[i], 
-                rot_min=rot_mins[i], rot_max=rot_maxs[i],
+                img_root='./Datasets/HighRes_Splits/WSI', 
+                target_root='./Datasets/Eliceiri_patches',
+#                fold=None,
+                t_level=i,
                 mode='test',
                 display=5)
-        make_patches(
-                wsi_root='../Datasets/HighRes_Splits/WSI/', 
-                target_root='../Datasets/Eliceiri_patches/',
-                trans_min=trans_mins[i], trans_max=trans_maxs[i], 
-                rot_min=rot_mins[i], rot_max=rot_maxs[i],
-                mode='train',
-                display=5)
+#        make_patches(
+#                img_root='./Datasets/HighRes_Splits/WSI', 
+#                target_root='./Datasets/Eliceiri_patches',
+#                fold=None,
+#                t_level=i,
+#                mode='train',
+#                display=5)
