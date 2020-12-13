@@ -353,6 +353,8 @@ if modA_val_path is not None and modB_val_path is not None:
     validation_enabled = True
     print("Loading test set...")
     dset_test = MultimodalDataset(modA_val_path + '/*', modB_val_path + '/*', logA=logTransformA, logB=logTransformB, transform=ImgAugTransform(testing=True))
+else:
+    validation_enabled = False
 
 # Modality slicing
 # You can choose a set of channels per modality (RGB for instance)
