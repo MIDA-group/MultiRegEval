@@ -166,6 +166,29 @@ cd ../DRIT/src/
 ./predict_eliceiri.sh
 ```
 
+### CoMIR
+```bash
+# train and test (for all datasets)
+cd ../CoMIR/
+./commands_train.sh
+
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_all.sh {gpu_id}
+```
+
+### StarGANv2
+
+```bash
+# train (for all datasets)
+cd ../stargan-v2/
+./commands_{Dataset}.sh
+
+# test
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_all.sh
+```
 
 
 

@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
     # misc
     parser.add_argument('--mode', type=str, # required=True,
-                        choices=['train', 'sample', 'eval', 'align'],
+                        choices=['train', 'sample', 'eval', 'align', 'test'],
                         help='This argument is used in solver')
     parser.add_argument('--num_workers', type=int, default=4,
                         help='Number of workers used in DataLoader')

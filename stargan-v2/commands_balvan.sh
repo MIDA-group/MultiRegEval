@@ -29,17 +29,3 @@ CUDA_VISIBLE_DEVICES=$2 nohup python main.py --mode train --img_size 256 --num_d
 	> ./checkpoints/balvan_train_fold$1/out.file 2>&1 &
 # 以上命令已运行
 
-
-# to be edited... 👇
-
-# wait
-### prepare test data
-mkdir -p data/balvan/fold$1/test
-cp -r ../Datasets/Balvan_temp/fold$1/A/test ./data/balvan/fold$1/test/A
-cp -r ../Datasets/Balvan_temp/fold$1/B/test ./data/balvan/fold$1/test/B
-# ### Test
-# # here input&output sizes are fixed to 1
-# python test.py --dataroot ./data/balvan_star2_train/fold$1/ --name balvan_train_fold$1 --model cycle_gan --num_test 99999 --batch_size 1 --preprocess pad --divisor 256 --input_nc 1 --output_nc 1 --gpu_ids $2
-
-# ### unpad results
-# python ../utils/unpad_results.py -p ./results/balvan_train_fold$1/test_latest/images --width 600 --height 600

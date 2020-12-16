@@ -29,17 +29,3 @@ CUDA_VISIBLE_DEVICES=$1 nohup python main.py --mode train --img_size 256 --num_d
 	--batch_size 4 \
 	> ./checkpoints/eliceiri_train/out.file 2>&1 &
 
-
-# to be edited... 👇
-
-# wait
-### prepare test data
-mkdir -p data/eliceiri/test
-cp -r ../Datasets/Eliceiri_temp/A/test ./data/eliceiri/test/A
-cp -r ../Datasets/Eliceiri_temp/B/test ./data/eliceiri/test/B
-# ### Test
-# # here input&output sizes are fixed to 1
-# python test.py --dataroot ./data/eliceiri_star2_train/ --name eliceiri_train --model cycle_gan --num_test 99999 --batch_size 1 --preprocess pad --divisor 256 --input_nc 1 --output_nc 1 --gpu_ids $2
-
-# ### unpad results
-# python ../utils/unpad_results.py -p ./results/eliceiri_train/test_latest/images --width 600 --height 600
