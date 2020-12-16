@@ -154,6 +154,18 @@ cd pytorch-CycleGAN-and-pix2pix/
 ./predict_eliceiri.sh
 ```
 
+- DRIT++
+
+```bash
+# train and test 
+cd ../DRIT/src/
+./commands_eliceiri.sh
+
+# modality mapping of evaluation data
+# Eliceiri_patches -> Eliceiri_patches_fake
+./predict_eliceiri.sh
+```
+
 
 
 
