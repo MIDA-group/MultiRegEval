@@ -18,7 +18,7 @@ done
 for f in {1..3}; do
 	for tlevel in {1..4}; do
 		CUDA_VISIBLE_DEVICES=0 python main.py --mode test --num_domains 2 --w_hpf 0 --resume_iter 100000 \
-		               --checkpoint_dir checkpoints/zurich_train \
+		               --checkpoint_dir checkpoints/zurich_train_fold${f} \
 		               --result_dir results/zurich_patches_star_fold${f}/tlevel${tlevel} \
 		               --src_dir data/zurich/fold${f}/test/tlevel${tlevel} \
 		               --ref_dir data/zurich/fold${f}/test/tlevel${tlevel}
