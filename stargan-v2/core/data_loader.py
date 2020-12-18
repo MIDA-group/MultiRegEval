@@ -200,6 +200,7 @@ def get_test_loader_withpath(root, img_size=256, batch_size=32,
     assert which in ['src', 'ref'], "'which' must be in ['src', 'ref']."
     if which == 'src':
         transform = transforms.Compose([
+            transforms.Lambda(lambda img: __pad(img, 256)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5],
                                  std=[0.5, 0.5, 0.5]),

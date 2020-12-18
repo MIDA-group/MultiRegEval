@@ -29,5 +29,8 @@ for f in {1..3}; do
 		cp ./results/balvan_patches_star_fold${f}/tlevel${tlevel}/*_fake_B.png ../Datasets/Balvan_patches_fake/fold${f}/patch_tlevel${tlevel}/star_B/
 		rename -v '_fake_A' '' ../Datasets/Balvan_patches_fake/fold${f}/patch_tlevel${tlevel}/star_A/*.png
 		rename -v '_fake_B' '' ../Datasets/Balvan_patches_fake/fold${f}/patch_tlevel${tlevel}/star_B/*.png
+		# unpad results
+		python ../utils/unpad_results.py -p ../Datasets/Balvan_patches_fake/fold${f}/patch_tlevel${tlevel}/star_A --width 300 --height 300
+		python ../utils/unpad_results.py -p ../Datasets/Balvan_patches_fake/fold${f}/patch_tlevel${tlevel}/star_B --width 300 --height 300
 	done
 done

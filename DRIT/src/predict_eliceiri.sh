@@ -3,9 +3,9 @@
 
 ## Test 4-level
 for tlevel in {1..4}; do
-	python test_transfer.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/eliceiri_patches_cyc/tlevel${tlevel}/ --resize_size 300 --crop_size 300 --a2b 1 --name eliceiri_drit_tlevel${tlevel}_a2b --concat 0 --resume ../results/eliceiri_drit_train/01199.pth
+	python test_transfer.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/eliceiri_patches_cyc/tlevel${tlevel}/ --resize_size 834 --crop_size 834 --a2b 1 --name eliceiri_drit_tlevel${tlevel}_a2b --concat 0 --resume ../results/eliceiri_drit_train/01199.pth
 	# strangely, --gpu can only be 0
-	python test_transfer.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/eliceiri_patches_cyc/tlevel${tlevel}/ --resize_size 300 --crop_size 300 --a2b 0 --name eliceiri_drit_tlevel${tlevel}_b2a --concat 0 --resume ../results/eliceiri_drit_train/01199.pth
+	python test_transfer.py --dataroot ../../pytorch-CycleGAN-and-pix2pix/datasets/eliceiri_patches_cyc/tlevel${tlevel}/ --resize_size 834 --crop_size 834 --a2b 0 --name eliceiri_drit_tlevel${tlevel}_b2a --concat 0 --resume ../results/eliceiri_drit_train/01199.pth
 done
 
 ### rename_results

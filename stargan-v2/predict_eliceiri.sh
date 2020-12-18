@@ -26,4 +26,7 @@ for tlevel in {1..4}; do
 	cp ./results/eliceiri_patches_star/tlevel${tlevel}/*_fake_B.png ../Datasets/Eliceiri_patches_fake/patch_tlevel${tlevel}/star_B/
 	rename -v '_fake_A' '' ../Datasets/Eliceiri_patches_fake/patch_tlevel${tlevel}/star_A/*.png
 	rename -v '_fake_B' '' ../Datasets/Eliceiri_patches_fake/patch_tlevel${tlevel}/star_B/*.png
+	# unpad results
+	python ../utils/unpad_results.py -p ../Datasets/Eliceiri_patches_fake/patch_tlevel${tlevel}/star_A --width 834 --height 834
+	python ../utils/unpad_results.py -p ../Datasets/Eliceiri_patches_fake/patch_tlevel${tlevel}/star_B --width 834 --height 834
 done
