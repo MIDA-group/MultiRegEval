@@ -14,7 +14,7 @@ from skimage import exposure
 
 # self-defined functions
 from utils.make_eliceiri_patches import dist_coords, tform_centred
-from mi import register_mi
+#from mi import register_mi
 from sift import register_sift
 import sys
 sys.path.append(os.path.abspath("./alpha_amd"))
@@ -81,8 +81,8 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
     
     if gan_name != '':
         assert data_root_fake, "data_root_fake must not be None when given gan_name."
-        assert gan_name in ['cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B', 'comir'], (
-                "gan_name must be in 'cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B', 'comir'")
+        assert gan_name in ['cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B', 'star_A', 'star_B', 'comir'], (
+                "gan_name must be in 'cyc_A', 'cyc_B', 'p2p_A', 'p2p_B', 'drit_A', 'drit_B', 'star_A', 'star_B', 'comir'")
         if 'comir' in gan_name:
             dir_A = f'{data_root_fake}/{os.path.split(data_root[:-1])[-1]}/{gan_name}_A/'
             dir_B = f'{data_root_fake}/{os.path.split(data_root[:-1])[-1]}/{gan_name}_B/'
@@ -244,8 +244,10 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
             else:
                 return
 
-    
-    df.to_csv(data_root + f'results_{method+gan_name}_{mode}_{preprocess}.csv')
+    result_dir = os.path.join(data_root, 'results')
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+    df.to_csv(f'{result_dir}/{method+gan_name}_{mode}_{preprocess}.csv')
     
     return
 
@@ -265,7 +267,7 @@ if __name__ == '__main__':
     parser.add_argument(
             '--gan', '-g', 
             help="gan method", 
-            choices=['p2p_A', 'p2p_B', 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', ''], 
+            choices=['p2p_A', 'p2p_B', 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'star_A', 'star_B', 'comir', ''], 
             default='')
     parser.add_argument(
             '--mode', 

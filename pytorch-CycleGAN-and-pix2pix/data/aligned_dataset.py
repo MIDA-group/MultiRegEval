@@ -2,6 +2,9 @@ import os.path
 from data.base_dataset import BaseDataset, get_params, get_transform
 from data.image_folder import make_dataset
 from PIL import Image
+import torchvision.transforms as transforms
+import numpy as np
+from imgaug import augmenters as iaa
 
 
 class AlignedDataset(BaseDataset):
@@ -46,12 +49,43 @@ class AlignedDataset(BaseDataset):
         B = AB.crop((w2, 0, w, h))
 
         # apply the same transform to both A and B
-        transform_params = get_params(self.opt, A.size)
-        A_transform = get_transform(self.opt, transform_params, grayscale=(self.input_nc == 1))
-        B_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1))
+        if self.opt.preprocess == 'mix':
+            if self.input_nc == 1:
+                A = transforms.Compose([transforms.Grayscale(1)])(A)
+            if self.output_nc == 1:
+                B = transforms.Compose([transforms.Grayscale(1)])(B)
 
-        A = A_transform(A)
-        B = B_transform(B)
+            aug = iaa.Sequential([
+                iaa.Fliplr(0.5),
+                iaa.Affine(rotate=(-180, 180), order=[0, 1, 3], mode="symmetric"),
+                iaa.Sometimes(0.5, iaa.GaussianBlur(sigma=(0, 2.0))),
+                ])
+            _aug = aug._to_deterministic()
+            A = _aug.augment_image(np.array(A))
+            B = _aug.augment_image(np.array(B))
+            
+            transform_list = [
+                lambda x: Image.fromarray(x),
+                transforms.CenterCrop(self.opt.crop_size), 
+                transforms.ToTensor(),
+                ]
+            if self.input_nc == 1:
+                transform_list_A = transform_list + [transforms.Normalize((0.5,), (0.5,))]
+            else:
+                transform_list_A = transform_list + [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+            if self.output_nc == 1:
+                transform_list_B = transform_list + [transforms.Normalize((0.5,), (0.5,))]
+            else:
+                transform_list_B = transform_list + [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+            A = transforms.Compose(transform_list_A)(A)
+            B = transforms.Compose(transform_list_B)(B)
+
+        else:
+            transform_params = get_params(self.opt, A.size)
+            A_transform = get_transform(self.opt, transform_params, grayscale=(self.input_nc == 1))
+            B_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1))
+            A = A_transform(A)
+            B = B_transform(B)
 
         return {'A': A, 'B': B, 'A_paths': AB_path, 'B_paths': AB_path}
 
