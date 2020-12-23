@@ -8,6 +8,7 @@
 
 [`environment.yml`](./environment.yml) includes the **full** list of packages used to run most of the experiments. Some packages might be unnecessary. And here are some exceptions:
 
+* [SimpleElastix](https://simpleelastix.github.io/) is required to compute the Mutual Information baseline performance. 
 * For [CoMIR](https://github.com/MIDA-group/CoMIR), to reduce GPU memory usage, the inference on GPU requires `pytorch>=1.6` to use the [Automatic Mixed Precision package](https://pytorch.org/docs/stable/amp.html), otherwise it uses *half-precision*.
 
 ## Execution order

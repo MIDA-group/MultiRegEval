@@ -1,8 +1,9 @@
 # command to run: 
-# nohup ./collect_results_balvan.sh {fold} &
+# nohup ./collect_results_balvan.sh {fold} {method}&
 
 dataroot="./Datasets/Balvan_patches/fold$1"
-method="aAMD"
+# method="aAMD"
+method=$2
 preprocess="nopre"
 mode="b2a"
 
@@ -35,3 +36,5 @@ for datadir in `ls ${dataroot} | grep tlevel*`; do
 		done
 	done
 done
+
+wait

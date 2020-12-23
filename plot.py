@@ -38,7 +38,7 @@ def scatter_plot(dataset, method, gan_name='', preprocess='', mode='b2a', dark=T
     
     # read results
     dfs = [pd.read_csv(csv_path) for csv_path 
-           in glob(f'{target_root}/patch_tlevel*/results_{method+gan_name}_{mode}_{preprocess}.csv')]
+           in glob(f'{target_root}/patch_tlevel*/results/{method+gan_name}_{mode}_{preprocess}.csv')]
     whole_df = pd.concat(dfs)
     #whole_df.loc[:, ['Displacement', 'Error']]
 
@@ -162,7 +162,7 @@ for pre in ['su', 'us']:
 
 
 # %% Success rate 
-def plot_success_rate(dataset, plot_method, pre='nopre', dark=True):
+def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     if dark == True:
         bg_color = '#181717'
         plt.style.use(['ggplot','dark_background'])
@@ -184,16 +184,16 @@ def plot_success_rate(dataset, plot_method, pre='nopre', dark=True):
         root_dir = './Datasets/Eliceiri_patches'
         w = 834
     elif dataset == 'Balvan':
-        root_dir = './Datasets/Balvan_patches/fold1'
+        root_dir = f'./Datasets/Balvan_patches/fold{fold}'
         w = 300
     elif dataset == 'Zurich':
-        root_dir = './Datasets/Zurich_patches/fold1'
+        root_dir = f'./Datasets/Zurich_patches/fold{fold}'
         w = 300
     
     def plot_single_curve(method, mode='b2a', preprocess='nopre'):
         # read results
         dfs = [pd.read_csv(csv_path) for csv_path 
-               in glob(f'{root_dir}/patch_tlevel*/results_{method}_{mode}_{preprocess}.csv')]
+               in glob(f'{root_dir}/patch_tlevel*/results/{method}_{mode}_{preprocess}.csv')]
         
         whole_df = pd.concat(dfs)
         
@@ -208,7 +208,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', dark=True):
         if method in ['MI', 'CA']:
             linestyle = '--'
             z=4
-        elif method != 'VXM' and '_' not in method:
+        elif method != 'VXM' and '_' not in method and 'comir' not in method:
             linestyle = '-.'
             z=4.1
         else:
@@ -232,7 +232,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', dark=True):
     ax.set_prop_cycle(color_cycler)
     
     # read results
-    results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/patch_tlevel2/results_*_*_*.csv')]
+    results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/patch_tlevel2/results/*_*_*.csv')]
     
     # baselines
     bin_edges = plot_single_curve(method='MI', mode='b2a', preprocess='nopre')
@@ -243,7 +243,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', dark=True):
         preprocess = parts[-1].split('.')[0]
         mode = parts[-2]
         i_ = [i for i, ltr in enumerate(result) if ltr == '_']
-        method = result[i_[0]+1:i_[-2]]
+        method = result[:i_[-2]].replace('results_','')
         if plot_method == 'SIFT':
     #        if 'aAMD' not in method and preprocess=='nopre':
             if plot_method in method and preprocess==pre:
@@ -297,5 +297,5 @@ def plot_success_rate(dataset, plot_method, pre='nopre', dark=True):
 
 # %%
 DARK=True
-for method in ['SIFT', 'aAMD', 'VXM']:
-    plot_success_rate(dataset='Eliceiri', plot_method=method, pre='nopre', dark=DARK)
+for method in ['SIFT', 'aAMD']:
+    plot_success_rate(dataset='Balvan', plot_method=method, pre='nopre', fold=2, dark=DARK)

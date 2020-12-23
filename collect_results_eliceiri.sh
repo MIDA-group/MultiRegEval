@@ -1,8 +1,9 @@
 # command to run: 
-# nohup ./collect_results_eliceiri.sh &
+# nohup ./collect_results_eliceiri.sh {method} &
 
 dataroot="./Datasets/Eliceiri_patches"
-method="aAMD"
+# method="aAMD"
+method=$1
 preprocess="nopre"
 mode="b2a"
 
@@ -35,3 +36,5 @@ for datadir in `ls ${dataroot} | grep tlevel*`; do
 		done
 	done
 done
+
+wait
