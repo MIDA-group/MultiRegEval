@@ -14,7 +14,7 @@ from skimage import exposure
 
 # self-defined functions
 from utils.make_eliceiri_patches import dist_coords, tform_centred
-#from mi import register_mi
+from mi import register_mi
 from sift import register_sift
 import sys
 sys.path.append(os.path.abspath("./alpha_amd"))
@@ -50,7 +50,7 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
         w=834
         o=608
         data_root_fake='./Datasets/Eliceiri_patches_fake'
-        n_mi_res=7          # number of resolution level for MI
+        n_mi_res=6          # number of resolution level for MI
         n_aAMD_iters=1.0    # factor of number of iterations for aAMD
     elif 'Balvan' in data_root:
         img_root='../Datasets/Balvan_1to4tiles'
@@ -61,7 +61,7 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
         if 'MI' in method and method.replace('MI', '') != '':
             n_mi_res=int(method.replace('MI', ''))          # number of resolution level for MI
         else:
-            n_mi_res=5
+            n_mi_res=4
         n_aAMD_iters=0.3    # factor of number of iterations for aAMD
     elif 'Zurich' in data_root:
         img_root='../Datasets/Balvan_1to4tiles'
@@ -72,7 +72,7 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
         if 'MI' in method and method.replace('MI', '') != '':
             n_mi_res=int(method.replace('MI', ''))          # number of resolution level for MI
         else:
-            n_mi_res=5
+            n_mi_res=4
         n_aAMD_iters=0.3    # factor of number of iterations for aAMD
     
     coords_ref = np.array(([0,0], [0,w], [w,w], [w,0]))
@@ -301,6 +301,17 @@ if __name__ == '__main__':
 #                    preprocess='nopre',
 #                    mode='b2a', 
 #                    display=None)
+
+#    for dataset in ['Zurich', 'Balvan']:
+#        for fold in [2, 3]:
+#            for data_dir in glob(f'./Datasets/{dataset}_patches/fold{fold}/patch_tlevel*/'):
+#                evaluate_methods(
+#                        data_root=data_dir, 
+#                        method='MI', 
+#                        preprocess='nopre',
+#                        mode='b2a', 
+#                        display=None)
+    
 
 # %% Print out success rate
 # =============================================================================

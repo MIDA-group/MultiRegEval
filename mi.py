@@ -3,7 +3,6 @@
 import os, cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import pyelastix
 from tqdm import tqdm
 import skimage.io as skio
 import SimpleITK as sitk
@@ -50,36 +49,6 @@ def register_mi(img1, img2, n_res=7):
     return img1Reg, tform_parameter
 
 # %%
-def register_mi_abandoned(img1, img2, equalhist=False):
-    # Select one channel (grayscale), and make float
-    if equalhist:
-        img1 = cv2.equalizeHist(img1)
-        img2 = cv2.equalizeHist(img2)
-
-    img1 = img1.astype('float32')
-    img2 = img2.astype('float32')
-        
-    img1 = np.ascontiguousarray(img1)
-    img2 = np.ascontiguousarray(img2)
-    
-    # Get default params and adjust
-    params = pyelastix.get_default_params(type='RIGID')
-    params.NumberOfResolutions = 3
-    params.MaximumNumberOfIterations = 200
-#    print(params)
-    
-    # Register!
-    img3, field = pyelastix.register(img1, img2, params, verbose=0)
-    
-#    # Visualize the result
-#    fig = plt.figure(1);
-#    plt.clf()
-#    plt.subplot(231); plt.imshow(img1)
-#    plt.subplot(232); plt.imshow(img2)
-#    plt.subplot(234); plt.imshow(img3)
-#    plt.subplot(235); plt.imshow(field[0])
-#    plt.subplot(236); plt.imshow(field[1])
-    return img3, field
 
 def overlay(img1, img2):
     ''' Overlay img1 to R, img2 to G

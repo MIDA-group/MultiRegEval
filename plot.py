@@ -205,7 +205,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
         
         z = None    # zorder
         m = None    # marker
-        if method in ['MI', 'CA']:
+        if method in ['MI', 'CA'] or 'MI' in method:
             linestyle = '--'
             z=4
         elif method != 'VXM' and '_' not in method and 'comir' not in method:
@@ -236,6 +236,10 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     
     # baselines
     bin_edges = plot_single_curve(method='MI', mode='b2a', preprocess='nopre')
+#    bin_edges = plot_single_curve(method='MI3', mode='b2a', preprocess='nopre')
+#    bin_edges = plot_single_curve(method='MI5', mode='b2a', preprocess='nopre')
+    if dataset == 'Eliceiri':
+        bin_edges = plot_single_curve(method='CA', mode='b2a', preprocess='nopre')
     
     # other lines
     for result in results:
@@ -278,6 +282,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     secaxx.set_xlabel('Relative initial displacement to image width', fontsize=15, color=label_color)
     secaxx.tick_params(labelsize='large')
     if dataset in ['Balvan', 'Zurich']:
+        ax.set_xlim(left=-1, right=81)
         secaxx.set_xlim(left=0, right=0.27)
 
     #plt.show()
@@ -285,17 +290,17 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     if dark == True:
-        plt.savefig(save_dir + f'dark_success_{plot_method}_{pre}.png', 
+        plt.savefig(save_dir + f'dark_{dataset}_success_{plot_method}_{pre}.png', 
                     format='png', dpi=300, bbox_inches='tight', facecolor=fig.get_facecolor(), edgecolor='none')
-        plt.savefig(save_dir + f'dark_success_{plot_method}_{pre}.svg', 
+        plt.savefig(save_dir + f'dark_{dataset}_success_{plot_method}_{pre}.svg', 
                     format='svg', bbox_inches='tight', facecolor=fig.get_facecolor(), edgecolor='none')
     else:
-        plt.savefig(save_dir + f'success_{plot_method}_{pre}.png', format='png', dpi=300, bbox_inches='tight')
-        plt.savefig(save_dir + f'success_{plot_method}_{pre}.pdf', format='pdf', bbox_inches='tight')
+        plt.savefig(save_dir + f'{dataset}_success_{plot_method}_{pre}.png', format='png', dpi=300, bbox_inches='tight')
+        plt.savefig(save_dir + f'{dataset}_success_{plot_method}_{pre}.pdf', format='pdf', bbox_inches='tight')
 
     return
 
 # %%
 DARK=True
 for method in ['SIFT', 'aAMD']:
-    plot_success_rate(dataset='Balvan', plot_method=method, pre='nopre', fold=2, dark=DARK)
+    plot_success_rate(dataset='Balvan', plot_method=method, pre='nopre', fold=1, dark=DARK)
