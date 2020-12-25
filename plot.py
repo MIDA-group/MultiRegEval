@@ -238,8 +238,6 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     bin_edges = plot_single_curve(method='MI', mode='b2a', preprocess='nopre')
 #    bin_edges = plot_single_curve(method='MI3', mode='b2a', preprocess='nopre')
 #    bin_edges = plot_single_curve(method='MI5', mode='b2a', preprocess='nopre')
-    if dataset == 'Eliceiri':
-        bin_edges = plot_single_curve(method='CA', mode='b2a', preprocess='nopre')
     
     # other lines
     for result in results:
@@ -260,6 +258,8 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     #        if 'SIFT' not in method and 'aAMD' not in method:
             if plot_method in method:
                 bin_edges = plot_single_curve(method=method, mode=mode, preprocess=preprocess)
+    if dataset == 'Eliceiri':
+        bin_edges = plot_single_curve(method='CA', mode='b2a', preprocess='nopre')
     
     ax.legend(fontsize='large', loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
     # bin edges
@@ -303,4 +303,5 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
 # %%
 DARK=True
 for method in ['SIFT', 'aAMD']:
-    plot_success_rate(dataset='Balvan', plot_method=method, pre='nopre', fold=1, dark=DARK)
+    for dataset in ['Balvan', 'Zurich', 'Eliceiri']:
+        plot_success_rate(dataset=dataset, plot_method=method, pre='nopre', fold=1, dark=DARK)

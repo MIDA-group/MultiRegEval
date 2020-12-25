@@ -33,6 +33,7 @@ def register_mi(img1, img2, n_res=7):
     #parameterMap['Optimizer'] = ['AdaGrad']
     
     elastixImageFilter = sitk.ElastixImageFilter()
+    elastixImageFilter.SetLogToConsole(False)
     elastixImageFilter.SetFixedImage(img2)
     elastixImageFilter.SetMovingImage(img1)
     elastixImageFilter.SetParameterMap(parameterMap)
