@@ -159,7 +159,9 @@ for pre in ['su', 'us']:
             mode='b2a',
             dark=DARK)
 
-
+# %%
+def greeting(name):
+    return f'Hello {name}'
 
 # %% Success rate 
 def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
@@ -179,21 +181,29 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     assert pre in ['', 'nopre', 'PCA', 'hiseq'], "pre must be in ['', 'nopre', 'PCA', 'hiseq']"
     
     # dataset-specific variables
-    assert dataset in ['Eliceiri', 'Balvan', 'Zurich'], "supervision must be in ['Eliceiri', 'Balvan', 'Zurich']"
+    assert dataset in ['Eliceiri', 'Balvan', 'Zurich'], "dataset must be in ['Eliceiri', 'Balvan', 'Zurich']"
     if dataset == 'Eliceiri':
         root_dir = './Datasets/Eliceiri_patches'
         w = 834
+        fold = 1
     elif dataset == 'Balvan':
         root_dir = f'./Datasets/Balvan_patches/fold{fold}'
         w = 300
     elif dataset == 'Zurich':
         root_dir = f'./Datasets/Zurich_patches/fold{fold}'
         w = 300
+    if fold == 'all':
+        root_dir = f'./Datasets/{dataset}_patches'
+        
     
     def plot_single_curve(method, mode='b2a', preprocess='nopre'):
         # read results
-        dfs = [pd.read_csv(csv_path) for csv_path 
-               in glob(f'{root_dir}/patch_tlevel*/results/{method}_{mode}_{preprocess}.csv')]
+        if fold == 'all':
+            dfs = [pd.read_csv(csv_path) for csv_path 
+                   in glob(f'{root_dir}/fold*/patch_tlevel*/results/{method}_{mode}_{preprocess}.csv')]
+        else:
+            dfs = [pd.read_csv(csv_path) for csv_path 
+                   in glob(f'{root_dir}/patch_tlevel*/results/{method}_{mode}_{preprocess}.csv')]
         
         whole_df = pd.concat(dfs)
         
@@ -232,7 +242,10 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     ax.set_prop_cycle(color_cycler)
     
     # read results
-    results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/patch_tlevel2/results/*_*_*.csv')]
+    if fold == 'all':
+        results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/fold1/patch_tlevel2/results/*_*_*.csv')]
+    else:
+        results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/patch_tlevel2/results/*_*_*.csv')]
     
     # baselines
     bin_edges = plot_single_curve(method='MI', mode='b2a', preprocess='nopre')
