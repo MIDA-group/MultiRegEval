@@ -5,6 +5,7 @@ from pytorch_fid import fid_score
 import pandas as pd
 from glob import glob
 import os, argparse
+import numpy as np
 
 # %%
 
@@ -21,12 +22,11 @@ dim = 2048
 #        batch_size, device, dim)
 
 # %%
-
 def calculate_FIDs(dataset, fold=1):
 #    dataset='Zurich'
 #    fold=1
     
-    assert dataset in ['Balvan', 'Eliceiri', 'Zurich'], "dataset must be in [['Balvan', 'Eliceiri', 'Zurich']"
+    assert dataset in ['Balvan', 'Eliceiri', 'Zurich'], "dataset must be in ['Balvan', 'Eliceiri', 'Zurich']"
     if dataset == 'Eliceiri':
         dataroot_real = f'./Datasets/{dataset}_patches'
         dataroot_fake = f'./Datasets/{dataset}_patches_fake'
@@ -80,6 +80,100 @@ def calculate_FIDs(dataset, fold=1):
     return
 
 # %%
+def make_FID_success_table(dataset, preprocess='nopre'):
+#    dataset='Zurich'
+#    fold=1
+    
+    assert dataset in ['Balvan', 'Eliceiri', 'Zurich'], "dataset must be in ['Balvan', 'Eliceiri', 'Zurich']"
+    if dataset == 'Eliceiri':
+        dataroot_real = f'./Datasets/{dataset}_patches'
+        path_FIDcsv = f'./Datasets/{dataset}_patches_fake'
+        w = 834
+        folds = ['']
+    else:
+        dataroot_real = f'./Datasets/{dataset}_patches/fold{{fold}}'
+        path_FIDcsv = f'./Datasets/{dataset}_patches_fake/fold*'
+        w = 300
+        folds = [1, 2, 3]
+    
+    
+    def success_rate(patches_dir, method, gan_name='', preprocess='nopre', mode='b2a'):
+        if gan_name in ['A2A', 'B2B']:
+            gan_name = ''
+        # read results
+        dfs = [pd.read_csv(csv_path) for csv_path 
+               in glob(f'{patches_dir}/patch_tlevel*/results/{method+gan_name}_{mode}_{preprocess}.csv')]
+        
+        whole_df = pd.concat(dfs)
+        n_success = whole_df['Error'][whole_df['Error'] <= w*0.02].count()
+        rate_success = n_success / len(whole_df)
+#        print(f'{method+gan_name}_{preprocess}', rate_success)
+        return rate_success
+    
+    
+    gan_names = ['testA', 'testB', 
+                 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
+    
+    
+    # csv information
+    header = [
+            'Method', 'Dataset', 
+            'FID_mean', 'FID_STD', 
+            'Success_aAMD_mean', 'Success_aAMD_STD', 
+            'Success_SIFT_mean', 'Success_SIFT_STD', 
+            ]
+    df = pd.DataFrame(columns=header)
+    
+    # calculate overall FID
+    dfs_FID = [pd.read_csv(csv_path) for csv_path 
+           in glob(f'{path_FIDcsv}/FIDs.csv')]        
+    _whole_df_FID = pd.concat(dfs_FID)
+    _whole_df_FID = _whole_df_FID.drop(columns=[_whole_df_FID.columns[0], 'Tlevel'])
+    df_FID_grouped = _whole_df_FID.groupby(['GAN_name', 'Fold']).mean().groupby(['GAN_name'])
+    
+    row_dict = {'Dataset': dataset}
+    
+    for gan_name in gan_names:
+        # calculate overall success rate
+        if gan_name == 'testA':
+            gan = 'A2A'
+            direction = 'a2a'
+        elif gan_name == 'testB':
+            gan = 'B2B'
+            direction = 'b2b'
+        else:
+            gan = gan_name
+            direction = 'b2a'
+        row_dict['Method'] = gan
+        for reg_method in ['SIFT', 'aAMD']:
+            l_success = [success_rate(patches_dir=dataroot_real.format(fold=fold), 
+                                      method=reg_method, 
+                                      gan_name=gan, 
+                                      preprocess=preprocess, 
+                                      mode=direction
+                                      ) for fold in folds]
+            row_dict[f'Success_{reg_method}_mean'] = np.mean(l_success)
+            row_dict[f'Success_{reg_method}_STD'] = np.std(l_success)
+        row_dict['FID_mean'] = df_FID_grouped.mean().loc[gan_name, 'FID']
+        row_dict['FID_STD'] = df_FID_grouped.std().loc[gan_name, 'FID']
+    
+        df = df.append(row_dict, ignore_index=True)  
+        
+    row_dict = {'Dataset': dataset}
+    for baseline in ['train2testA', 'train2testB']:
+        row_dict['Method'] = baseline
+        row_dict['FID_mean'] = df_FID_grouped.mean().loc[baseline, 'FID']
+        row_dict['FID_STD'] = df_FID_grouped.std().loc[baseline, 'FID']
+        df = df.append(row_dict, ignore_index=True)  
+    
+    result_dir = f'./Datasets/{dataset}_patches_fake'
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+    df.to_csv(f'{result_dir}/FID_success_{preprocess}.csv')
+
+    return
+
+# %%
 if __name__ == '__main__':
     # for running from terminal
     parser = argparse.ArgumentParser(description='Calculate FIDs for generated patches.')
@@ -97,3 +191,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     calculate_FIDs(dataset=args.dataset, fold=args.fold)
+    
+    for pre in ['nopre', 'hiseq']:
+        for dataset in ['Balvan', 'Eliceiri', 'Zurich']:
+            make_FID_success_table(dataset=dataset, preprocess=pre)
