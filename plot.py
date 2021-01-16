@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # make plots from csv data
 import pandas as pd
-import os, cv2
+import os, cv2, random
 import numpy as np
 import matplotlib.pyplot as plt
 from glob import glob
@@ -443,3 +443,64 @@ for pre in ['nopre', 'hiseq']:
     for dataset in ['Balvan', 'Eliceiri', 'Zurich']:
         fid_scatter(dataset=dataset, preprocess=pre, dark=DARK)
 
+# %%
+def result_montage(dataset, n=3):
+    dataset='Eliceiri'
+#    modality='A'
+    assert dataset in ['Balvan', 'Eliceiri', 'Zurich'], "dataset must be in ['Balvan', 'Eliceiri', 'Zurich']"
+    if dataset == 'Eliceiri':
+        dataroot_real = f'./Datasets/{dataset}_patches/patch_tlevel1'
+        dataroot_fake = f'./Datasets/{dataset}_patches_fake/patch_tlevel1'
+        w = 834
+        folds = ['']
+    else:
+        dataroot_real = f'./Datasets/{dataset}_patches/fold{{fold}}/patch_tlevel1'
+        dataroot_fake = f'./Datasets/{dataset}_patches_fake/fold*/patch_tlevel1'
+        w = 300
+        folds = [1, 2, 3]
+    # dataroot_real.format(fold=fold) for fold in folds
+    
+    direction = {'A': 'R', 'B': 'T'}
+    title_dict = {
+            'oriA':'Fixed', 'oriB':'Moving', 
+            'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'}
+    gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir_A', 'comir_B']
+
+    real_paths = random.sample(glob(f'{dataroot_real}/A/test/*_R.*'), n)
+    f_names = [os.path.basename(real_path).split('.')[0][:-2] for real_path in real_paths]
+    
+    for modality in ['A', 'B']:
+        gan_types = [folder for folder in gan_names if modality not in folder]
+        ncol, nrow = len(gan_types)+1, n
+        gap = 0.01
+        fig, axs = plt.subplots(
+                nrows=n, ncols=len(gan_types)+1, 
+                gridspec_kw=dict(wspace=gap, hspace=gap,
+                                 top=1. - 0.5 / (nrow + 1), bottom=0.5 / (nrow + 1),
+                                 left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1)),
+                figsize=(ncol + 1 + (ncol-1)*gap, nrow + 1 + (nrow-1)*gap), dpi=200,
+                sharex='col', sharey='row')
+        imgs = []
+        for i_sample in range(n):
+            f_name = f_names[i_sample]
+            for i_gan in range(len(gan_types)+1):
+                if i_gan == 0:
+                    title = f'ori{modality}'
+                    suffix = os.path.basename(glob(f'{dataroot_real}/{modality}/test/*_{direction[modality]}.*')[0]).split('.')[-1]
+                    img = cv2.imread(f'{dataroot_real}/{modality}/test/{f_name}_{direction[modality]}.{suffix}')
+                else:
+                    title = gan_types[i_gan-1]
+                    suffix = os.path.basename(glob(f'{dataroot_fake}/{title}/*_{direction[modality]}.*')[0]).split('.')[-1]
+                    img = cv2.imread(f'{dataroot_fake}/{title}/{f_name}_{direction[modality]}.{suffix}')
+                imgs.append(axs[i_sample, i_gan].imshow(img))
+                axs[i_sample, i_gan].label_outer()
+                axs[i_sample, i_gan].set_axis_off()
+                if i_sample == n - 1:
+                    axs[i_sample, i_gan].set_title(title_dict[title.split('_')[0]], y=-0.25, fontsize=12, color='black')
+
+        save_dir = f'./Datasets/{dataset}_patches/result_imgs/'
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        
+        plt.savefig(save_dir + f'{dataset}_samples_{modality}.png', format='png', dpi=300, bbox_inches='tight')
+            
