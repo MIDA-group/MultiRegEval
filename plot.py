@@ -194,6 +194,22 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     if fold == 'all':
         root_dir = f'./Datasets/{dataset}_patches'
         
+    label_dict = {
+            'MI_b2a': 'MI_b2a',
+            'CA_b2a': 'CA_b2a',
+            'SIFTcomir_b2a': 'comir',
+            'SIFTcyc_A_b2a': 'cyc_A',
+            'SIFTcyc_B_b2a': 'cyc_B',
+            'SIFTdrit_A_b2a': 'drit_A',
+            'SIFTdrit_B_b2a': 'drit_B',
+            'SIFTp2p_A_b2a': 'p2p_A',
+            'SIFTp2p_B_b2a': 'p2p_B',
+            'SIFTstar_A_b2a': 'star_A',
+            'SIFTstar_B_b2a': 'star_B',
+            'SIFT_b2a': 'b2a',
+            'SIFT_a2a': 'a2a',
+            'SIFT_b2b': 'b2b',
+            }
     
     def plot_single_curve(method, mode='b2a', preprocess='nopre'):
         # read results
@@ -223,11 +239,12 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
         else:
             linestyle = '-'
             m = next(markers)
-            
+        
         if method == 'VXM':
             ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, label=f'{method}_{mode}_{preprocess}')
         else:
-            ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, zorder=z, label=f'{method}_{mode}')
+            ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, zorder=z, 
+                    label=label_dict[f'{method}_{mode}'])
     
         return bin_edges
         
@@ -273,7 +290,9 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     if dataset == 'Eliceiri':
         bin_edges = plot_single_curve(method='CA', mode='b2a', preprocess='nopre')
     
-    ax.legend(fontsize='large', loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
+#        # un-comment to enable legend
+#        ax.legend(fontsize=22, loc='upper center', ncol=7, bbox_to_anchor=(1, 1.5), framealpha=0.0)
+    
     # bin edges
     for edge in bin_edges:
         ax.axvline(x=edge, linestyle='dotted', color='grey', zorder=1.5)
@@ -313,10 +332,12 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     return
 
 # %%
-DARK=True
+plot_success_rate(dataset='Eliceiri', plot_method='SIFT', pre='nopre', fold='all', dark=False) # for legend test
+
+DARK=False
 for method in ['SIFT', 'aAMD']:
     for dataset in ['Balvan', 'Zurich', 'Eliceiri']:
-        plot_success_rate(dataset=dataset, plot_method=method, pre='nopre', fold=1, dark=DARK)
+        plot_success_rate(dataset=dataset, plot_method=method, pre='nopre', fold='all', dark=DARK)
 
 # %%
 def adjust_lightness(color, amount=0.5):
@@ -398,11 +419,11 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
             i_row += 1
 #    ax.scatter(df['FID_mean'], df['Success_aAMD_mean'], alpha=0.6)
 #    ax.scatter(df['FID_mean'], df['Success_SIFT_mean'], alpha=0.6)
-        
-#    ax.legend(fontsize='large', framealpha=0.4, loc='lower right')
-    legend1 = ax.legend(handles=legend1_elements, 
-                        fontsize='large', loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
-    ax.add_artist(legend1)
+    
+    if dataset == 'Eliceiri':    
+        legend1 = ax.legend(handles=legend1_elements, 
+                            fontsize=22, loc='center left', bbox_to_anchor=(1.2, 0.5), framealpha=0.0)
+        ax.add_artist(legend1)
     
     # FID baselines
     baselineA = ax.axvline(x=df.loc['train2testA', 'FID_mean'], 
@@ -411,11 +432,12 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
                            linestyle="--", color=next(colors), alpha=0.5, label='train2test_B')
     
     # 2nd legend
-    legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=10, c='grey', label='aAMD'),
-                        Line2D([],[], linewidth=0, marker='X', markersize=10, c='grey', label='SIFT'),
-                        baselineA, 
-                        baselineB]
-    ax.legend(handles=legend2_elements, fontsize='large', loc='center left', bbox_to_anchor=(1, 0.1), framealpha=0.0)
+    if dataset == 'Eliceiri':    
+        legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=10, c='grey', label='aAMD'),
+                            Line2D([],[], linewidth=0, marker='X', markersize=10, c='grey', label='SIFT'),
+                            baselineA, 
+                            baselineB]
+        ax.legend(handles=legend2_elements, fontsize=22, loc='center left', bbox_to_anchor=(1.5, 0.5), framealpha=0.0)
     
     ax.set_ylim(bottom=-0.05, top=1.05)
     ax.set_xlabel('Fréchet Inception Distance ($FID$)', fontsize=15, color=label_color)
@@ -438,7 +460,7 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     return
 
 # %%
-DARK=True
+DARK=False
 for pre in ['nopre', 'hiseq']:
     for dataset in ['Balvan', 'Eliceiri', 'Zurich']:
         fid_scatter(dataset=dataset, preprocess=pre, dark=DARK)
