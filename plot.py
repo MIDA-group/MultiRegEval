@@ -209,6 +209,18 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
             'SIFT_b2a': 'b2a',
             'SIFT_a2a': 'a2a',
             'SIFT_b2b': 'b2b',
+            'aAMDcomir_b2a': 'comir',
+            'aAMDcyc_A_b2a': 'cyc_A',
+            'aAMDcyc_B_b2a': 'cyc_B',
+            'aAMDdrit_A_b2a': 'drit_A',
+            'aAMDdrit_B_b2a': 'drit_B',
+            'aAMDp2p_A_b2a': 'p2p_A',
+            'aAMDp2p_B_b2a': 'p2p_B',
+            'aAMDstar_A_b2a': 'star_A',
+            'aAMDstar_B_b2a': 'star_B',
+            'aAMD_b2a': 'b2a',
+            'aAMD_a2a': 'a2a',
+            'aAMD_b2b': 'b2b',
             }
     
     def plot_single_curve(method, mode='b2a', preprocess='nopre'):
