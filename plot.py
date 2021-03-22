@@ -492,9 +492,11 @@ def result_montage(dataset, n=3):
     
     direction = {'A': 'R', 'B': 'T'}
     title_dict = {
-            'oriA':'Fixed', 'oriB':'Moving', 
-            'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'}
+            'A':{'ori':'Fixed', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
+            'B':{'ori':'Moving', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
+            }
     gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir_A', 'comir_B']
+    modalities = ['A', 'B']
 
     f_names = {}
     for i_sample in range(n):
@@ -504,7 +506,7 @@ def result_montage(dataset, n=3):
             f_name = os.path.basename(random.choice(glob(f'{dataroot_real}/A/test/*_R.*'.format(fold=fold)))).split('.')[0][:-2]
         f_names[f_name] = fold
     
-    for modality in ['A', 'B']:
+    for modality in modalities:
         gan_types = [folder for folder in gan_names if modality not in folder]
         ncol, nrow = len(gan_types)+1, n
         gap = 0.01
@@ -515,23 +517,22 @@ def result_montage(dataset, n=3):
                                  left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1)),
                 figsize=(ncol + 1 + (ncol-1)*gap, nrow + 1 + (nrow-1)*gap), dpi=200,
                 sharex='col', sharey='row')
-        imgs = []
         i_sample = 0
         for f_name, fold in f_names.items():
             for i_gan in range(len(gan_types)+1):
                 if i_gan == 0:
-                    title = f'ori{modality}'
+                    title = 'ori'
                     suffix = os.path.basename(glob(f'{dataroot_real}/{modality}/test/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
                     img = cv2.imread(f'{dataroot_real}/{modality}/test/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
                 else:
-                    title = gan_types[i_gan-1]
-                    suffix = os.path.basename(glob(f'{dataroot_fake}/{title}/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
-                    img = cv2.imread(f'{dataroot_fake}/{title}/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
-                imgs.append(axs[i_sample, i_gan].imshow(img))
+                    title, modality_gan = gan_types[i_gan-1].split('_')
+                    suffix = os.path.basename(glob(f'{dataroot_fake}/{title}_{modality_gan}/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
+                    img = cv2.imread(f'{dataroot_fake}/{title}_{modality_gan}/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
+                axs[i_sample, i_gan].imshow(img)
                 axs[i_sample, i_gan].label_outer()
                 axs[i_sample, i_gan].set_axis_off()
                 if i_sample == n - 1:
-                    axs[i_sample, i_gan].set_title(title_dict[title.split('_')[0]], y=-0.25, fontsize=12, color='black')
+                    axs[i_sample, i_gan].set_title(title_dict[modality][title], y=-0.25, fontsize=12, color='black')
             i_sample += 1
 
         save_dir = f'./Datasets/{dataset}_patches/result_imgs/'

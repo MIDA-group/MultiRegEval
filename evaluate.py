@@ -163,8 +163,16 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
                 img_tar = result_tar.reshape(img_tar.shape[0], img_tar.shape[1])
             else:
                 # load image (w, h)
+#                img_grey = np.asarray((img_rgb[...,0] * 0.299 + img_rgb[...,1] * 0.587 + img_rgb[...,2] * 0.114), dtype=np.uint8)
                 img_src = cv2.imread(dir_src + f"{f_name}_T.{suffix_src.split('.')[-1]}", 0)
                 img_tar = cv2.imread(dir_tar + f"{f_name}_R.{suffix_tar.split('.')[-1]}", 0)
+                if 'Zurich' in data_root and 'comir' not in gan_name:   # because Zurich images are stored in BGR
+                    if 'B' in dir_src:
+                        img_src_rgb = cv2.imread(dir_src + f"{f_name}_T.{suffix_src.split('.')[-1]}")
+                        img_src = np.asarray((img_src_rgb[...,0] * 0.299 + img_src_rgb[...,1] * 0.587 + img_src_rgb[...,2] * 0.114), dtype=np.uint8)
+                    if 'B' in dir_tar:
+                        img_tar_rgb = cv2.imread(dir_tar + f"{f_name}_R.{suffix_tar.split('.')[-1]}")
+                        img_tar = np.asarray((img_tar_rgb[...,0] * 0.299 + img_tar_rgb[...,1] * 0.587 + img_tar_rgb[...,2] * 0.114), dtype=np.uint8)
                         
             # histogram equlisation
             if preprocess == 'hiseq':
