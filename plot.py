@@ -66,7 +66,7 @@ def scatter_plot(dataset, method, gan_name='', preprocess='', mode='b2a', dark=T
     ac = ax.axhline(y=w*0.02, linestyle="--", color="#52854C", label='success threshold $\delta_0$')
     ax.legend(handles=[ac, ab], fontsize='large', framealpha=0.4, loc='lower right')
     
-    ax.set_xlabel('Initial displacement $d$ [px]', fontsize=15, color =label_color)
+    ax.set_xlabel('Initial displacement $d_{\mathrm{Init}}$ [px]', fontsize=15, color =label_color)
     ax.set_ylabel('Absolute registration error $\epsilon$ [px]', fontsize=15, color =label_color)
     ax.tick_params(labelsize='large')
     
@@ -163,6 +163,19 @@ for pre in ['su', 'us']:
 
 
 # %% Success rate 
+def adjust_lightness(color, amount=0.5):
+    import matplotlib.colors as mc
+    import colorsys
+    try:
+        c = mc.cnames[color]
+    except:
+        c = color
+    c = colorsys.rgb_to_hls(*mc.to_rgb(c))
+    c_out = colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
+    if type(color) is str:
+        c_out = mc.to_hex(c_out)
+    return c_out
+
 def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     if dark == True:
         bg_color = '#181717'
@@ -175,7 +188,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     else:
         plt.style.use('ggplot')
         label_color = 'black'    
-    markers = itertools.cycle(('p', '*', 'P', 'X', '+', '.', 'x', 'h', 'H', '1')) 
+    markers = itertools.cycle(('x', 'h', 'P', 'X', '+', '.', 'p', '*', 'H', '1')) 
 
     assert pre in ['', 'nopre', 'PCA', 'hiseq'], "pre must be in ['', 'nopre', 'PCA', 'hiseq']"
     
@@ -195,9 +208,6 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
         root_dir = f'./Datasets/{dataset}_patches'
         
     label_dict = {
-            'MI_b2a': 'MI_b2a',
-            'CA_b2a': 'CA_b2a',
-            'SIFTcomir_b2a': 'comir',
             'SIFTcyc_A_b2a': 'cyc_A',
             'SIFTcyc_B_b2a': 'cyc_B',
             'SIFTdrit_A_b2a': 'drit_A',
@@ -206,10 +216,10 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
             'SIFTp2p_B_b2a': 'p2p_B',
             'SIFTstar_A_b2a': 'star_A',
             'SIFTstar_B_b2a': 'star_B',
-            'SIFT_b2a': 'b2a',
+            'SIFTcomir_b2a': 'comir',
+            'SIFT_b2a': 'B2A',
             'SIFT_a2a': 'a2a',
             'SIFT_b2b': 'b2b',
-            'aAMDcomir_b2a': 'comir',
             'aAMDcyc_A_b2a': 'cyc_A',
             'aAMDcyc_B_b2a': 'cyc_B',
             'aAMDdrit_A_b2a': 'drit_A',
@@ -218,12 +228,15 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
             'aAMDp2p_B_b2a': 'p2p_B',
             'aAMDstar_A_b2a': 'star_A',
             'aAMDstar_B_b2a': 'star_B',
-            'aAMD_b2a': 'b2a',
+            'aAMDcomir_b2a': 'comir',
+            'aAMD_b2a': 'B2A',
             'aAMD_a2a': 'a2a',
             'aAMD_b2b': 'b2b',
+            'MI_b2a': 'MI_B2A',
+            'CA_b2a': 'CA_B2A',
             }
     
-    def plot_single_curve(method, mode='b2a', preprocess='nopre'):
+    def plot_single_curve(method, mode='b2a', preprocess='nopre', color=None):
         # read results
         if fold == 'all':
             dfs = [pd.read_csv(csv_path) for csv_path 
@@ -242,20 +255,30 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
         
         z = None    # zorder
         m = None    # marker
+        lw = None   # linewidth
         if method in ['MI', 'CA'] or 'MI' in method:
             linestyle = '--'
             z=4
+            if 'MI' in method:
+                color = 'black'
         elif method != 'VXM' and '_' not in method and 'comir' not in method:
-            linestyle = '-.'
+            linestyle = ':'
+            lw=2
             z=4.1
         else:
-            linestyle = '-'
+            if 'comir' in method:
+                linestyle = '-.'
+                color = adjust_lightness(c, amount=1.3)
+            else:
+                linestyle = '-'
             m = next(markers)
         
         if method == 'VXM':
-            ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, label=f'{method}_{mode}_{preprocess}')
+            ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, color=color, alpha=0.7, markersize=10, 
+                    label=f'{method}_{mode}_{preprocess}')
         else:
-            ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, zorder=z, 
+            ax.plot(bin_centres, success_rates, linestyle=linestyle, marker=m, color=color, alpha=0.7, markersize=10, 
+                    linewidth=lw, zorder=z, 
                     label=label_dict[f'{method}_{mode}'])
     
         return bin_edges
@@ -265,45 +288,39 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
 #    plt.style.use('ggplot')
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 7), sharex='col', sharey='row')
     # set colour
-    color_cycler = plt.style.library['tableau-colorblind10']['axes.prop_cycle']
-    colors = color_cycler.by_key()['color']
-    ax.set_prop_cycle(color_cycler)
+#    color_cycler = plt.style.library['tableau-colorblind10']['axes.prop_cycle']
+#    colors = color_cycler.by_key()['color']
+#    ax.set_prop_cycle(color_cycler)
+    colors = sns.color_palette("Paired").as_hex()
+    colors = itertools.cycle(colors)
     
-    # read results
-    if fold == 'all':
-        results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/fold1/patch_tlevel2/results/*_*_*.csv')]
-    else:
-        results = [os.path.basename(res_path) for res_path in glob(f'{root_dir}/patch_tlevel2/results/*_*_*.csv')]
-    
+    # other lines
+    i_row = 0
+    for k in label_dict.keys():
+        parts = k.split('_')
+        mode = parts[-1]
+        i_ = [i for i, ltr in enumerate(k) if ltr == '_']
+        method = k[:i_[-1]].replace('results_','')
+        if plot_method in method and mode == 'b2a':
+            c = next(colors)
+            if label_dict[k] == 'B2A':
+                c = next(colors)
+                i_row += 1
+            if dark != True:      # darken bright colors for bright mode
+                c = adjust_lightness(c, amount=0.4) if i_row % 2 == 0 else adjust_lightness(c, amount=1.2)
+            bin_edges = plot_single_curve(method=method, mode=mode, preprocess=pre, color=c)
+            i_row += 1
+
     # baselines
     bin_edges = plot_single_curve(method='MI', mode='b2a', preprocess='nopre')
 #    bin_edges = plot_single_curve(method='MI3', mode='b2a', preprocess='nopre')
 #    bin_edges = plot_single_curve(method='MI5', mode='b2a', preprocess='nopre')
     
-    # other lines
-    for result in results:
-        parts = result.split('_')
-        preprocess = parts[-1].split('.')[0]
-        mode = parts[-2]
-        i_ = [i for i, ltr in enumerate(result) if ltr == '_']
-        method = result[:i_[-2]].replace('results_','')
-        if plot_method == 'SIFT':
-    #        if 'aAMD' not in method and preprocess=='nopre':
-            if plot_method in method and preprocess==pre:
-                bin_edges = plot_single_curve(method=method, mode=mode, preprocess=preprocess)
-        elif plot_method == 'aAMD':
-    #        if 'SIFT' not in method and preprocess=='nopre':
-            if plot_method in method and preprocess==pre:
-                bin_edges = plot_single_curve(method=method, mode=mode, preprocess=preprocess)
-        elif plot_method == 'VXM':
-    #        if 'SIFT' not in method and 'aAMD' not in method:
-            if plot_method in method:
-                bin_edges = plot_single_curve(method=method, mode=mode, preprocess=preprocess)
     if dataset == 'Eliceiri':
         bin_edges = plot_single_curve(method='CA', mode='b2a', preprocess='nopre')
     
-#        # un-comment to enable legend
-#        ax.legend(fontsize=22, loc='upper center', ncol=7, bbox_to_anchor=(1, 1.5), framealpha=0.0)
+        # un-comment to enable legend
+        ax.legend(fontsize=22, loc='upper center', ncol=6, bbox_to_anchor=(0.5, 1.5), framealpha=0.0)
     
     # bin edges
     for edge in bin_edges:
@@ -312,8 +329,8 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
         ax.set_xlim(left=0, right=225)
     ax.set_ylim(bottom=-0.05, top=1.05)
     
-    ax.set_xlabel('Initial displacement $d$ [px]', fontsize=15, color=label_color)
-    ax.set_ylabel('Success rate $\lambda$', fontsize=15, color=label_color)
+    ax.set_xlabel('Initial displacement $d_{\mathrm{Init}}$ [px]', fontsize=15, color=label_color)
+    ax.set_ylabel('Registration success rate $\lambda$', fontsize=15, color=label_color)
     ax.tick_params(labelsize='large')
 
     # Secondary Axis
@@ -344,7 +361,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     return
 
 # %%
-plot_success_rate(dataset='Eliceiri', plot_method='SIFT', pre='nopre', fold='all', dark=False) # for legend test
+plot_success_rate(dataset='Eliceiri', plot_method='aAMD', pre='nopre', fold='all', dark=False) # for legend test
 
 DARK=False
 for method in ['SIFT', 'aAMD']:
@@ -352,18 +369,6 @@ for method in ['SIFT', 'aAMD']:
         plot_success_rate(dataset=dataset, plot_method=method, pre='nopre', fold='all', dark=DARK)
 
 # %%
-def adjust_lightness(color, amount=0.5):
-    import matplotlib.colors as mc
-    import colorsys
-    try:
-        c = mc.cnames[color]
-    except:
-        c = color
-    c = colorsys.rgb_to_hls(*mc.to_rgb(c))
-    c_out = colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
-    if type(color) is str:
-        c_out = mc.to_hex(c_out)
-    return c_out
 
 def fid_scatter(dataset, preprocess='nopre', dark=True):
 #    dataset='Zurich'
@@ -389,8 +394,9 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     root_dir = f'./Datasets/{dataset}_patches'
     result_dir = f'./Datasets/{dataset}_patches_fake'
 
-    gan_names = ['A2A', 'B2B', 
-                 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
+#    gan_names = ['A2A', 'B2B', 
+#                 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
+    gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir', 'B2A']
 
 
     # read results
@@ -411,14 +417,17 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     for method_row in df.itertuples():
         if method_row.Index in gan_names:
             c = next(colors)
+            if method_row.Index == 'B2A':
+                c = next(colors)
+                i_row += 1
             if dark != True:      # darken bright colors for bright mode
                 c = adjust_lightness(c, amount=0.4) if i_row % 2 == 0 else adjust_lightness(c, amount=1.2)
             ax.scatter(method_row.FID_mean, method_row.Success_aAMD_mean, 
 #                       label=method_row.Index, 
-                       c=c, s=10**2, marker='o', alpha=0.6, zorder=2.5)
+                       c=c, s=12**2, marker='o', alpha=0.6, zorder=2.5)
             ax.scatter(method_row.FID_mean, method_row.Success_SIFT_mean, 
 #                       label=method_row.Index, 
-                       c=c, s=10**2, marker='X', alpha=0.6, zorder=2.5)
+                       c=c, s=12**2, marker='X', alpha=0.6, zorder=2.5)
             if dataset != 'Eliceiri':
                 # Error bars
                 ax.errorbar(method_row.FID_mean, method_row.Success_aAMD_mean, 
@@ -437,18 +446,19 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
                             fontsize=22, loc='center left', bbox_to_anchor=(1.2, 0.5), framealpha=0.0)
         ax.add_artist(legend1)
     
-    # FID baselines
-    baselineA = ax.axvline(x=df.loc['train2testA', 'FID_mean'], 
-                           linestyle="--", color=next(colors), alpha=0.5, label='train2test_A')
-    baselineB = ax.axvline(x=df.loc['train2testB', 'FID_mean'], 
-                           linestyle="--", color=next(colors), alpha=0.5, label='train2test_B')
+#    # FID baselines
+#    baselineA = ax.axvline(x=df.loc['train2testA', 'FID_mean'], 
+#                           linestyle="--", color=next(colors), alpha=0.5, label='train2test_A')
+#    baselineB = ax.axvline(x=df.loc['train2testB', 'FID_mean'], 
+#                           linestyle="--", color=next(colors), alpha=0.5, label='train2test_B')
     
     # 2nd legend
     if dataset == 'Eliceiri':    
-        legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=10, c='grey', label='aAMD'),
-                            Line2D([],[], linewidth=0, marker='X', markersize=10, c='grey', label='SIFT'),
-                            baselineA, 
-                            baselineB]
+        legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=12, c='grey', label='aAMD'),
+                            Line2D([],[], linewidth=0, marker='X', markersize=12, c='grey', label='SIFT'),
+#                            baselineA, 
+#                            baselineB,
+                            ]
         ax.legend(handles=legend2_elements, fontsize=22, loc='center left', bbox_to_anchor=(1.5, 0.5), framealpha=0.0)
     
     ax.set_ylim(bottom=-0.05, top=1.05)
@@ -472,6 +482,8 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     return
 
 # %%
+fid_scatter(dataset='Eliceiri', preprocess='nopre', dark=False) # for legend test
+
 DARK=False
 for pre in ['nopre', 'hiseq']:
     for dataset in ['Balvan', 'Eliceiri', 'Zurich']:

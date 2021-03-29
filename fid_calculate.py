@@ -37,9 +37,9 @@ def calculate_FIDs(dataset, fold=1):
         dataroot_train = f'./Datasets/{dataset}_temp/fold{fold}'
     
     
-    gan_names = ['train2testA', 'train2testB', 'testA', 'testB', 
+    gan_names = ['train2testA', 'train2testB', 'testA', 'testB', 'B2A',
                  'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
-      
+#    gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir', 'B2A']
     
     # csv information
     header = [
@@ -63,6 +63,9 @@ def calculate_FIDs(dataset, fold=1):
             elif gan_name == 'comir':
                 row_dict['Path_fake'] = f'{dataroot_fake}/patch_tlevel{tlevel}/{gan_name}_A/'
                 row_dict['Path_real'] = f'{dataroot_fake}/patch_tlevel{tlevel}/{gan_name}_B/'
+            elif gan_name == 'B2A':
+                row_dict['Path_fake'] = f'{dataroot_real}/patch_tlevel{tlevel}/A/test/'
+                row_dict['Path_real'] = f'{dataroot_real}/patch_tlevel{tlevel}/B/test/'
             else:
                 row_dict['Path_fake'] = f'{dataroot_fake}/patch_tlevel{tlevel}/{gan_name}/'
                 row_dict['Path_real'] = f'{dataroot_real}/patch_tlevel{tlevel}/{gan_name[-1]}/test/'
@@ -98,7 +101,7 @@ def make_FID_success_table(dataset, preprocess='nopre'):
     
     
     def success_rate(patches_dir, method, gan_name='', preprocess='nopre', mode='b2a'):
-        if gan_name in ['A2A', 'B2B']:
+        if gan_name in ['A2A', 'B2B', 'B2A']:
             gan_name = ''
         # read results
         dfs = [pd.read_csv(csv_path) for csv_path 
@@ -111,8 +114,9 @@ def make_FID_success_table(dataset, preprocess='nopre'):
         return rate_success
     
     
-    gan_names = ['testA', 'testB', 
-                 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
+#    gan_names = ['testA', 'testB', 'B2A',
+#                 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
+    gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir', 'B2A']
     
     
     # csv information
@@ -192,6 +196,6 @@ if __name__ == '__main__':
     
     calculate_FIDs(dataset=args.dataset, fold=args.fold)
     
-    for pre in ['nopre', 'hiseq']:
+    for pre in ['nopre']:
         for dataset in ['Balvan', 'Eliceiri', 'Zurich']:
             make_FID_success_table(dataset=dataset, preprocess=pre)
