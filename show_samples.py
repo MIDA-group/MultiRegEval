@@ -108,8 +108,8 @@ def result_montage(dataset, n=3):
     
     direction = {'A': 'R', 'B': 'T'}
     title_dict = {
-            'A':{'ori':'Fixed', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
-            'B':{'ori':'Moving', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
+            'A':{'ori':'Modality A', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
+            'B':{'ori':'Modality B', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
             }
     gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir_A', 'comir_B']
     modalities = ['A', 'B']
@@ -174,9 +174,10 @@ def result_montage(dataset, n=3):
         sample_en = enhance(imgs[modality]['sample'], pers[modality], dataset)
         skio.imsave(save_dir + f'{dataset}_{sample_name}_{modality}_en.png', sample_en)
         # save enhanced intro examples
-        for rof in ['real', 'fake']:
-            sample_en = enhance(imgs[modality][f'intro_{rof}'], pers[modality], dataset)
-            skio.imsave(save_dir + f'{dataset}_intro_{rof}{modality}_en.png', sample_en)
+        if dataset != 'Zurich':
+            for rof in ['real', 'fake']:
+                sample_en = enhance(imgs[modality][f'intro_{rof}'], pers[modality], dataset)
+                skio.imsave(save_dir + f'{dataset}_intro_{rof}{modality}_en.png', sample_en)
 
     
     # Draw sample GAN imgs

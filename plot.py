@@ -441,6 +441,7 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
 #    ax.scatter(df['FID_mean'], df['Success_aAMD_mean'], alpha=0.6)
 #    ax.scatter(df['FID_mean'], df['Success_SIFT_mean'], alpha=0.6)
     
+    # un-comment to enable legend
     if dataset == 'Eliceiri':    
         legend1 = ax.legend(handles=legend1_elements, 
                             fontsize=22, loc='center left', bbox_to_anchor=(1.2, 0.5), framealpha=0.0)
@@ -453,6 +454,7 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
 #                           linestyle="--", color=next(colors), alpha=0.5, label='train2test_B')
     
     # 2nd legend
+    # un-comment to enable legend
     if dataset == 'Eliceiri':    
         legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=12, c='grey', label='aAMD'),
                             Line2D([],[], linewidth=0, marker='X', markersize=12, c='grey', label='SIFT'),
