@@ -20,9 +20,45 @@ This repository provides an open-source quantitative evaluation framework for mu
 
 ## Usage
 
-- pix2pix and CycleGAN
+- pix2pix and CycleGAN: run `commands_*.sh` to train and `predict_*.sh` to translate
+
+```bash
+# train and test 
+cd pytorch-CycleGAN-and-pix2pix/
+./commands_{dataset}.sh {fold} {gpu_id} # no {fold} for Histological data
+
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_{dataset}.sh
+```
+
 - CoMIR: run [`commands_train.sh`](./COMIR/commands_train.sh) and [`predict_all.sh`](./CoMIR/predict_all.sh)
-- 
+
+```bash
+# train and test (for all datasets)
+cd ../CoMIR/
+./commands_train.sh
+
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_all.sh {gpu_id}
+```
+
+- DRIT++: run `commands_*.sh` to train and [`predict_all.sh`](./DRIT/src/predict_all.sh) to translate
+
+```bash
+# train and test 
+cd ../DRIT/src/
+./commands_{dataset}.sh
+
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_{dataset}.sh
+```
+
+- StarGANv2: 
+
+
 
 ## Dependencies
 
