@@ -20,6 +20,8 @@ This repository provides an open-source quantitative evaluation framework for mu
 
 ## Usage
 
+### Image-to-Image translation
+
 - pix2pix and CycleGAN: run `commands_*.sh` to train and `predict_*.sh` to translate
 
 ```bash
@@ -27,6 +29,31 @@ This repository provides an open-source quantitative evaluation framework for mu
 cd pytorch-CycleGAN-and-pix2pix/
 ./commands_{dataset}.sh {fold} {gpu_id} # no {fold} for Histological data
 
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_{dataset}.sh
+```
+
+- DRIT++: run `commands_*.sh` to train and [`predict_all.sh`](./DRIT/src/predict_all.sh) to translate
+
+```bash
+# train and test 
+cd ../DRIT/src/
+./commands_{dataset}.sh
+
+# modality mapping of evaluation data
+# {Dataset}_patches -> {Dataset}_patches_fake
+./predict_{dataset}.sh
+```
+
+- StarGANv2: run `commands_*.sh` to train and [`predict_all.sh`](./stargan-v2/predict_all.sh) to translate
+
+```bash
+# train (for all datasets)
+cd ../stargan-v2/
+./commands_{dataset}.sh
+
+# test
 # modality mapping of evaluation data
 # {Dataset}_patches -> {Dataset}_patches_fake
 ./predict_{dataset}.sh
@@ -44,19 +71,9 @@ cd ../CoMIR/
 ./predict_all.sh {gpu_id}
 ```
 
-- DRIT++: run `commands_*.sh` to train and [`predict_all.sh`](./DRIT/src/predict_all.sh) to translate
+### Evaluate registration performance
 
-```bash
-# train and test 
-cd ../DRIT/src/
-./commands_{dataset}.sh
-
-# modality mapping of evaluation data
-# {Dataset}_patches -> {Dataset}_patches_fake
-./predict_{dataset}.sh
-```
-
-- StarGANv2: 
+Run  `python evaluate.py -h` to see the options.
 
 
 
