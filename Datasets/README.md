@@ -117,15 +117,15 @@ In the `*.zip` files, each row in `{Zurich,Balvan}_patches/fold[1-3]/patch_tleve
 zh{ID}_{iRow}_{iCol}_{ReferenceOrTransformed}.png
 ```
 
-Example: `zh5_03_02_R.png` indicates the **Reference** patch of the **3rd row** and **2nd column** cut from image with ID `zh5`.
+Example: `zh5_03_02_R.png` indicates the **Reference** patch of the **3rd row** and **2nd column** cut from the image with ID `zh5`.
 
 ### Cytological data
 
 ```
-{{cellline}_{treatment}_{fieldofview}}_{iRow}_{iCol}_{ReferenceOrTransformed}.png
+{{cellline}_{treatment}_{fieldofview}_{iFrame}}_{iRow}_{iCol}_{ReferenceOrTransformed}.png
 ```
 
-Example: `PNT1A_do_1_f15_02_01_T.png` indicates the **Transformed** patch of the **2nd row** and **1st column** cut from image with ID `PNT1A_do_1_f15`.
+Example: `PNT1A_do_1_f15_02_01_T.png` indicates the **Transformed** patch of the **2nd row** and **1st column** cut from the image with ID `PNT1A_do_1_f15`.
 
 ### Histological data
 
@@ -133,7 +133,7 @@ Example: `PNT1A_do_1_f15_02_01_T.png` indicates the **Transformed** patch of the
 {ID}_{ReferenceOrTransformed}.tif
 ```
 
-Example: `1B_A4_T.tif` indicates the **Transformed** patch cut from image with ID `1B_A4`.
+Example: `1B_A4_T.tif` indicates the **Transformed** patch cut from the image with ID `1B_A4`.
 
 
 
