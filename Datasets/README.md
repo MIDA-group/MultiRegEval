@@ -33,7 +33,7 @@ For the Histological data, to avoid too easy registration relying on the circula
 The evaluation set created from the above [three publicly available datasets](#data-sources) consists of images undergone 4 levels of (rigid) transformations of increasing size of displacement. The level of transformations is determined by the size of the rotation angle θ and the displacement tx & ty, detailed in the table. Each image sample is transformed exactly once at each transformation level so that all levels have the same number of samples. 
 
 <table align="center">
-  <caption>Transformation levels in evaluation sets</caption>
+  <caption style="text-align:center">Transformation levels in evaluation sets</caption>
 <thead>
   <tr>
     <th rowspan="2" style="text-align:center">Transformation level</th>
