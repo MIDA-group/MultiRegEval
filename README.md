@@ -12,7 +12,7 @@ This repository provides an open-source quantitative evaluation framework for mu
 
 - [`evaluate.py`](./evaluate.py) is the main script to call the registration methods and calculate their performance.
 
-- [`data_description.md`](./Datasets/data_description.md) contains detailed descriptions of the evaluation datasets, and instructions to customise them.
+- [`./Datasets/`](./Datasets/) contains detailed descriptions of the evaluation datasets, and instructions and scripts to customise them.
 - The `*.sh` scripts provide examples to set large-scale evaluations.
 - [`plot.py`](./plot.py) and [`show_samples.py`](show_samples.py) can be used to plot the registration performance and visualise the modality-translation results (see [paper](https://arxiv.org/abs/2103.16262) for examples).
 - Each folder contains the modified implementation of a method, whose compatibility with this evaluation framework is tested (see [paper](https://arxiv.org/abs/2103.16262) for details).
