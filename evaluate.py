@@ -64,7 +64,7 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
             n_mi_res=4
         n_aAMD_iters=0.3    # factor of number of iterations for aAMD
     elif 'Zurich' in data_root:
-        img_root='../Datasets/Balvan_1to4tiles'
+        img_root='../Datasets/Zurich_tiles'
         w=300 # patch width
         o=w//2 # offset: upper-left corner of patch
         fold = data_root[data_root.rfind('fold') + len('fold')]
@@ -323,12 +323,12 @@ if __name__ == '__main__':
 
 # %% Print out success rate
 # =============================================================================
-# ROOT_DIR='./Datasets/Balvan_patches'
+# ROOT_DIR='./Datasets/Balvan_patches/fold1'
 # 
 # def success_rate(method, gan_name='', preprocess='nopre', mode='b2a'):
 #     # read results
 #     dfs = [pd.read_csv(csv_path) for csv_path 
-#            in glob(f'{ROOT_DIR}/patch_tlevel*/results_{method+gan_name}_{mode}_{preprocess}.csv')]
+#            in glob(f'{ROOT_DIR}/patch_tlevel*/results/{method+gan_name}_{mode}_{preprocess}.csv')]
 #     
 #     whole_df = pd.concat(dfs)
 #     n_success = whole_df['Error'][whole_df['Error'] <= 300*0.02].count()
