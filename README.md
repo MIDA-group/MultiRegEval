@@ -2,9 +2,9 @@
 
 # Evaluation Framework for Multimodal Biomedical Image Registration Methods
 
-Code of paper [Is Image-to-Image Translation the Panacea for Multimodal Image Registration? A Comparative Study](https://arxiv.org/abs/2103.16262)
+Code of the paper *[Is Image-to-Image Translation the Panacea for Multimodal Image Registration? A Comparative Study](https://arxiv.org/abs/2103.16262)*
 
-Open-access data: [Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/4587903)
+Open-access data: *[Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/4587903)*
 
 ## Overview
 
