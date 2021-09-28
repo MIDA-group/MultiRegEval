@@ -39,3 +39,16 @@ for f in {1..3}; do
 	wait
 done
 
+# RIRE data
+
+## Train
+for f in {1..3}; do
+	CUDA_VISIBLE_DEVICES=0 nohup python train_comir.py \
+		../Datasets/RIRE_temp/fold${f}/A/train \
+		../Datasets/RIRE_temp/fold${f}/B/train \
+		-export_folder results/rire_train_fold${f} \
+		-log_a 1 -iterations 100 -l2 0.1 \
+		> ./logs/rire_train_fold${f}.file 2>&1 &
+	wait
+done
+

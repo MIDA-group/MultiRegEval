@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# make Eliceiri data from WSIs to patches
+# make Balvan data to patches
 import pandas as pd
 import skimage.io as skio
 import skimage.transform as skt

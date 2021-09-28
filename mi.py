@@ -49,6 +49,35 @@ def register_mi(img1, img2, n_res=7):
 #    skio.imshow(img1Reg)
     return img1Reg, tform_parameter
 
+# SimpleElastix
+def register_mi_3D(moving, fixed, n_res=7):
+#    img1 = cv2.imread('./Datasets/Eliceiri_patches/patch_trans10-20_rot10-15/B/test/1B_A7_T.tif', 0)
+#    img2 = cv2.imread('./Datasets/Eliceiri_patches/patch_trans10-20_rot10-15/A/test/1B_A7_R.tif', 0)
+            
+    parameterMap = sitk.GetDefaultParameterMap('rigid')
+    parameterMap['ResultImagePixelType'] = ['uint16']
+    parameterMap['NumberOfResolutions'] = [str(n_res)]
+    parameterMap['MaximumNumberOfIterations'] = ['1024']
+    
+    #parameterMap['Optimizer'] = ['AdaGrad']
+    
+    elastixImageFilter = sitk.ElastixImageFilter()
+    elastixImageFilter.SetLogToConsole(False)
+    elastixImageFilter.SetFixedImage(fixed)
+    elastixImageFilter.SetMovingImage(moving)
+    elastixImageFilter.SetParameterMap(parameterMap)
+    elastixImageFilter.Execute()
+    
+#    resultImage = elastixImageFilter.GetResultImage()
+#    img1Reg = sitk.GetArrayFromImage(resultImage).astype('uint16')
+    transformParameterMap = elastixImageFilter.GetTransformParameterMap()[0].asdict()
+#    tform_parameter = transformParameterMap['TransformParameters']
+#    radian = float(tform_parameter[0])
+#    tx = float(tform_parameter[1])
+#    ty = float(tform_parameter[2])
+#    skio.imshow(img1Reg)
+    return transformParameterMap
+
 # %%
 
 def overlay(img1, img2):

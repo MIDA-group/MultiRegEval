@@ -186,6 +186,22 @@ python ./utils/prepare_Eliceiri.py
 python ./utils/make_eliceiri_patches.py
 ```
 
+### Medical data
+
+```bash
+# prepare training data for I2I translation
+# RIRE -> RIRE_temp
+python ./utils/prepare_RIRE.py
+
+# make evaluation patches
+# RIRE -> RIRE_patches
+python ./utils/make_rire_patches.py
+
+# stack I2I translated slices to volumes and generate cutouts
+# RIRE_slices_fake -> RIRE_patches_fake
+python ./utils/make_rire_patches_fake.py
+```
+
 
 
 ## Citation

@@ -27,7 +27,7 @@ def scatter_plot(dataset, method, gan_name='', preprocess='', mode='b2a', dark=T
     markers = itertools.cycle(('p', '*', 'P', 'X', '+', '.', 'x', 'h', 'H', '1')) 
 
     # dataset-specific variables
-    assert dataset in ['Eliceiri', 'Balvan', 'Zurich'], "supervision must be in ['Eliceiri', 'Balvan', 'Zurich']"
+    assert dataset in ['Eliceiri', 'Balvan', 'Zurich', 'RIRE'], "dataset must be in ['Eliceiri', 'Balvan', 'Zurich', 'RIRE']"
     if dataset == 'Eliceiri':
         target_root = './Datasets/Eliceiri_patches'
         w = 834
@@ -37,6 +37,9 @@ def scatter_plot(dataset, method, gan_name='', preprocess='', mode='b2a', dark=T
     elif dataset == 'Zurich':
         target_root = './Datasets/Zurich_patches/fold1'
         w = 300
+    elif dataset == 'RIRE':
+        target_root = './Datasets/RIRE_patches/fold1'
+        w = 80
     
     # read results
     dfs = [pd.read_csv(csv_path) for csv_path 
@@ -106,6 +109,7 @@ scatter_plot(
         dataset='Zurich', 
 #        dataset='Balvan', 
 #        dataset='Eliceiri', 
+#        dataset='RIRE', 
         method='MI', 
         gan_name='', 
         preprocess='nopre', 
@@ -442,7 +446,7 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
 #    ax.scatter(df['FID_mean'], df['Success_SIFT_mean'], alpha=0.6)
     
     # un-comment to enable legend
-    if dataset == 'Eliceiri':    
+    if dataset == 'Eliceiri' or dark == True:    
         legend1 = ax.legend(handles=legend1_elements, 
                             fontsize=22, loc='center left', bbox_to_anchor=(1.2, 0.5), framealpha=0.0)
         ax.add_artist(legend1)
@@ -455,7 +459,7 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     
     # 2nd legend
     # un-comment to enable legend
-    if dataset == 'Eliceiri':    
+    if dataset == 'Eliceiri' or dark == True:    
         legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=12, c='grey', label='aAMD'),
                             Line2D([],[], linewidth=0, marker='X', markersize=12, c='grey', label='SIFT'),
 #                            baselineA, 

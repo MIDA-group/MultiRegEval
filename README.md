@@ -32,6 +32,10 @@ cd pytorch-CycleGAN-and-pix2pix/
 # modality mapping of evaluation data
 # {Dataset}_patches -> {Dataset}_patches_fake
 ./predict_{dataset}.sh
+
+# for RIRE dataset
+# RIRE_temp -> RIRE_slices_fake
+./predict_rire.sh
 ```
 
 - DRIT++: run `commands_*.sh` to train and [`predict_all.sh`](./DRIT/src/predict_all.sh) to translate
@@ -44,6 +48,10 @@ cd ../DRIT/src/
 # modality mapping of evaluation data
 # {Dataset}_patches -> {Dataset}_patches_fake
 ./predict_{dataset}.sh
+
+# for RIRE dataset
+# ../../pytorch-CycleGAN-and-pix2pix/datasets/rire_cyc_train -> RIRE_slices_fake
+./predict_rire.sh
 ```
 
 - StarGANv2: run `commands_*.sh` to train and [`predict_all.sh`](./stargan-v2/predict_all.sh) to translate
@@ -51,12 +59,16 @@ cd ../DRIT/src/
 ```bash
 # train (for all datasets)
 cd ../stargan-v2/
-./commands_{dataset}.sh
+./commands_{dataset}.sh {fold} {gpu_id} # no {fold} for Histological data
 
 # test
 # modality mapping of evaluation data
 # {Dataset}_patches -> {Dataset}_patches_fake
 ./predict_{dataset}.sh
+
+# for RIRE dataset
+# RIRE_temp -> RIRE_slices_fake
+./predict_rire.sh
 ```
 
 - CoMIR: run [`commands_train.sh`](./COMIR/commands_train.sh) and [`predict_all.sh`](./CoMIR/predict_all.sh)
