@@ -103,7 +103,7 @@ def make_success_table(preprocess='nopre', ds=2):
                 folds = ['']
             else:
                 dataroot_real = f'./Datasets/{dataset}_patches/fold{{fold}}'
-                w = 300
+                w = np.asarray((210, 210, 70)).mean() if dataset == 'RIRE' else 300
                 folds = [1, 2, 3]
             l_success = [success_rate(patches_dir=dataroot_real.format(fold=fold), 
                                       method=row_name, 
