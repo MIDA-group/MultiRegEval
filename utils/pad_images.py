@@ -16,7 +16,7 @@ def pad_images(in_dir, out_dir, d):
 #    in_dir='./pytorch-CycleGAN-and-pix2pix/datasets/zurich_p2p_train/fold1/train'
 #    out_dir='../datasets/balvan_cyc_train/fold1/testA'
 #    d=256  
-    def pad_sample(img, d=256):
+    def pad_sample(img, d=512):
         # pad the image size to multiple of divisor d
         img = np.asarray(img)
         (w, h) = img.shape[:2]
@@ -55,7 +55,7 @@ parser.add_argument(
         '--divisor', '-d', 
         help="pad the image size to multiple of divisor d", 
         type=int, 
-        default=256)
+        default=512)
 args = parser.parse_args()
 
 pad_images(args.indir, args.outdir, args.divisor)

@@ -10,6 +10,8 @@ import itertools
 import seaborn as sns
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
+import skimage.transform as skt
+
 
 # %% 
 def scatter_plot(dataset, method, gan_name='', preprocess='', mode='b2a', dark=True):
@@ -39,7 +41,7 @@ def scatter_plot(dataset, method, gan_name='', preprocess='', mode='b2a', dark=T
         w = 300
     elif dataset == 'RIRE':
         target_root = './Datasets/RIRE_patches/fold1'
-        w = 80
+        w = np.asarray((210, 210, 70)).mean()
     
     # read results
     dfs = [pd.read_csv(csv_path) for csv_path 
@@ -197,7 +199,7 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     assert pre in ['', 'nopre', 'PCA', 'hiseq'], "pre must be in ['', 'nopre', 'PCA', 'hiseq']"
     
     # dataset-specific variables
-    assert dataset in ['Eliceiri', 'Balvan', 'Zurich'], "dataset must be in ['Eliceiri', 'Balvan', 'Zurich']"
+    assert dataset in ['Eliceiri', 'Balvan', 'Zurich', 'RIRE'], "dataset must be in ['Eliceiri', 'Balvan', 'Zurich', 'RIRE']"
     if dataset == 'Eliceiri':
         root_dir = './Datasets/Eliceiri_patches'
         w = 834
@@ -208,6 +210,9 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     elif dataset == 'Zurich':
         root_dir = f'./Datasets/Zurich_patches/fold{fold}'
         w = 300
+    elif dataset == 'RIRE':
+        root_dir = f'./Datasets/RIRE_patches/fold{fold}'
+        w = np.asarray((210, 210, 70)).mean()
     if fold == 'all':
         root_dir = f'./Datasets/{dataset}_patches'
         
@@ -236,8 +241,10 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
             'aAMD_b2a': 'B2A',
             'aAMD_a2a': 'a2a',
             'aAMD_b2b': 'b2b',
-            'MI_b2a': 'MI_B2A',
-            'CA_b2a': 'CA_B2A',
+            'MI_b2a': 'MI',
+            'CA_b2a': 'CA',
+            'Mind_b2a': 'MIND',
+            'NGF_b2a': 'NGF',
             }
     
     def plot_single_curve(method, mode='b2a', preprocess='nopre', color=None):
@@ -265,6 +272,8 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
             z=4
             if 'MI' in method:
                 color = 'black'
+        elif method in ['Mind', 'NGF']:
+            linestyle = (0, (3, 1, 1, 1))
         elif method != 'VXM' and '_' not in method and 'comir' not in method:
             linestyle = ':'
             lw=2
@@ -319,12 +328,17 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
     bin_edges = plot_single_curve(method='MI', mode='b2a', preprocess='nopre')
 #    bin_edges = plot_single_curve(method='MI3', mode='b2a', preprocess='nopre')
 #    bin_edges = plot_single_curve(method='MI5', mode='b2a', preprocess='nopre')
+    bin_edges = plot_single_curve(method='Mind', mode='b2a', preprocess='nopre')
+    bin_edges = plot_single_curve(method='NGF', mode='b2a', preprocess='nopre')
     
     if dataset == 'Eliceiri':
         bin_edges = plot_single_curve(method='CA', mode='b2a', preprocess='nopre')
-    
         # un-comment to enable legend
-        ax.legend(fontsize=22, loc='upper center', ncol=6, bbox_to_anchor=(0.5, 1.5), framealpha=0.0)
+        ax.legend(fontsize=22, loc='upper center', ncol=7, bbox_to_anchor=(0.5, 1.5), framealpha=0.0)
+
+    if dataset == 'RIRE':
+        ax.plot(np.zeros(1), np.zeros([1,3]), color='w', alpha=0, label=' ')
+        ax.legend(fontsize=22, loc='center left', ncol=2, bbox_to_anchor=(1.05, 0.5), framealpha=0.0)
     
     # bin edges
     for edge in bin_edges:
@@ -496,13 +510,23 @@ for pre in ['nopre', 'hiseq']:
         fid_scatter(dataset=dataset, preprocess=pre, dark=DARK)
 
 # %%
+def unpad_sample(img, wo, ho):
+    (wi, hi) = img.shape[:2]
+    assert wo <= wi and ho <= hi
+    wl = (wi - wo) // 2
+    hl = (hi - ho) // 2
+    return img[wl:wl+wo, hl:hl+ho]
+# %%
 def result_montage(dataset, n=3):
 #    dataset='Eliceiri'
 #    modality='A'
-    assert dataset in ['Balvan', 'Eliceiri', 'Zurich'], "dataset must be in ['Balvan', 'Eliceiri', 'Zurich']"
+    assert dataset in ['Balvan', 'Eliceiri', 'Zurich', 'RIRE'], "dataset must be in ['Balvan', 'Eliceiri', 'Zurich', 'RIRE']"
     if dataset == 'Eliceiri':
         dataroot_real = f'./Datasets/{dataset}_patches/patch_tlevel1'
         dataroot_fake = f'./Datasets/{dataset}_patches_fake/patch_tlevel1'
+    elif dataset == 'RIRE':
+        dataroot_real = f'./Datasets/{dataset}_temp/fold{{fold}}'
+        dataroot_fake = f'./Datasets/{dataset}_slices_fake/fold{{fold}}'
     else:
         dataroot_real = f'./Datasets/{dataset}_patches/fold{{fold}}/patch_tlevel1'
         dataroot_fake = f'./Datasets/{dataset}_patches_fake/fold{{fold}}/patch_tlevel1'
@@ -510,8 +534,8 @@ def result_montage(dataset, n=3):
     
     direction = {'A': 'R', 'B': 'T'}
     title_dict = {
-            'A':{'ori':'Fixed', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
-            'B':{'ori':'Moving', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
+            'A':{'ori':'Modality A', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
+            'B':{'ori':'Modality B', 'cyc':'CycleGAN', 'drit':'DRIT++', 'p2p':'Pix2pix', 'star':'StarGANv2', 'comir':'CoMIR'},
             }
     gan_names = ['cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir_A', 'comir_B']
     modalities = ['A', 'B']
@@ -519,9 +543,14 @@ def result_montage(dataset, n=3):
     f_names = {}
     for i_sample in range(n):
         fold = None if dataset == 'Eliceiri' else i_sample % 3 + 1
-        f_name = os.path.basename(random.choice(glob(f'{dataroot_real}/A/test/*_R.*'.format(fold=fold)))).split('.')[0][:-2]
-        while f_name in f_names:
+        if dataset == 'RIRE':
+            f_name = os.path.basename(random.choice(glob(f'{dataroot_real}/A/test/*_z1.*'.format(fold=fold))))
+            while f_name in f_names:
+                f_name = os.path.basename(random.choice(glob(f'{dataroot_real}/A/test/*_z1.*'.format(fold=fold))))
+        else:
             f_name = os.path.basename(random.choice(glob(f'{dataroot_real}/A/test/*_R.*'.format(fold=fold)))).split('.')[0][:-2]
+            while f_name in f_names:
+                f_name = os.path.basename(random.choice(glob(f'{dataroot_real}/A/test/*_R.*'.format(fold=fold)))).split('.')[0][:-2]
         f_names[f_name] = fold
     
     for modality in modalities:
@@ -538,19 +567,32 @@ def result_montage(dataset, n=3):
         i_sample = 0
         for f_name, fold in f_names.items():
             for i_gan in range(len(gan_types)+1):
-                if i_gan == 0:
-                    title = 'ori'
-                    suffix = os.path.basename(glob(f'{dataroot_real}/{modality}/test/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
-                    img = cv2.imread(f'{dataroot_real}/{modality}/test/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
+                if dataset == 'RIRE':
+                    if i_gan == 0:
+                        title = 'ori'
+                        img = cv2.imread(f'{dataroot_real}/{modality}/test/{f_name}'.format(fold=fold))
+                        size_ori = img.shape
+                    else:
+                        title, modality_gan = gan_types[i_gan-1].split('_')
+                        img = cv2.imread(f'{dataroot_fake}/{title}_{modality_gan}/{f_name}'.format(fold=fold))
+                        img = unpad_sample(img, size_ori[0], size_ori[1])
+                    img = skt.resize(img, (320, 320))
                 else:
-                    title, modality_gan = gan_types[i_gan-1].split('_')
-                    suffix = os.path.basename(glob(f'{dataroot_fake}/{title}_{modality_gan}/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
-                    img = cv2.imread(f'{dataroot_fake}/{title}_{modality_gan}/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
+                    if i_gan == 0:
+                        title = 'ori'
+                        suffix = os.path.basename(glob(f'{dataroot_real}/{modality}/test/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
+                        img = cv2.imread(f'{dataroot_real}/{modality}/test/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
+                    else:
+                        title, modality_gan = gan_types[i_gan-1].split('_')
+                        suffix = os.path.basename(glob(f'{dataroot_fake}/{title}_{modality_gan}/*_{direction[modality]}.*'.format(fold=fold))[0]).split('.')[-1]
+                        img = cv2.imread(f'{dataroot_fake}/{title}_{modality_gan}/{f_name}_{direction[modality]}.{suffix}'.format(fold=fold))
                 axs[i_sample, i_gan].imshow(img)
                 axs[i_sample, i_gan].label_outer()
                 axs[i_sample, i_gan].set_axis_off()
-                if i_sample == n - 1:
+                if modality == 'A' and i_sample == n - 1:
                     axs[i_sample, i_gan].set_title(title_dict[modality][title], y=-0.25, fontsize=12, color='black')
+                if modality == 'B' and i_sample == 0:
+                    axs[i_sample, i_gan].set_title(title_dict[modality][title], y=0.98, fontsize=12, color='black')
             i_sample += 1
 
         save_dir = f'./Datasets/{dataset}_patches/result_imgs/'

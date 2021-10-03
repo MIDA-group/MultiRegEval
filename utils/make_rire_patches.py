@@ -68,20 +68,15 @@ def resample_volume(volume, transformation, new_spacing=[1.25, 1.25, 1.25], inte
 
 # %%
 def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
-#                 trans_min=0, trans_max=15, rot_min=0, rot_max=5, 
-                 mode='train', display=None):
+                 mode='train'):
 #    img_root='./Datasets/RIRE'
 #    target_root='./Datasets/RIRE_patches'
 #    fold=1
 #    t_level=2
 #    n_samples=10
-#    trans_min=0
-#    trans_max=15
-#    rot_min=0
-#    rot_max=5
 #    mode='test'
     
-    w=80 # patch width
+    w = np.asarray((210, 210, 70)) # patch width
   
     
     #modalities = {'GREEN':'A', 'QPI':'B'}
@@ -131,8 +126,6 @@ def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
     df = pd.DataFrame(index=[f'{f_name}_{i}' for f_name in f_names for i in range(n_samples)], columns=header)
     df.index.set_names('Filename', inplace=True)
     
-    if display is not None:
-        cnt_disp = 0
     for f_name in tqdm(f_names):
         # load original images
         imgA = sitk.ReadImage(f"{img_root}/patient_{f_name}/mr_T1/patient_{f_name}_mr_T1.mhd")
@@ -151,8 +144,8 @@ def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
         
         
         # crop patches from resampled volumes
-        patchA_ref = imgA_resampled[osA[0]:osA[0]+w, osA[1]:osA[1]+w, osA[2]:osA[2]+w]
-        patchB_ref = imgB_resampled[osB[0]:osB[0]+w, osB[1]:osB[1]+w, osB[2]:osB[2]+w]
+        patchA_ref = imgA_resampled[osA[0]:osA[0]+w[0], osA[1]:osA[1]+w[1], osA[2]:osA[2]+w[2]]
+        patchB_ref = imgB_resampled[osB[0]:osB[0]+w[0], osB[1]:osB[1]+w[1], osB[2]:osB[2]+w[2]]
         sitk.WriteImage(patchA_ref, f'{tardirA}/patient_{f_name}_R.mhd')
         sitk.WriteImage(patchB_ref, f'{tardirB}/patient_{f_name}_R.mhd')
 
@@ -160,14 +153,14 @@ def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
 #        sizeB = [int(round(osz*ospc)) for osz,ospc in zip(imgB.GetSize(), imgB.GetSpacing())]
 
         coords_ref = [
-                (osA[0], osA[1], osA[2]), (osA[0]+w, osA[1], osA[2]), 
-                (osA[0], osA[1]+w, osA[2]), (osA[0]+w, osA[1]+w, osA[2]), 
-                (osA[0], osA[1], osA[2]+w), (osA[0]+w, osA[1], osA[2]+w), 
-                (osA[0], osA[1]+w, osA[2]+w), (osA[0]+w, osA[1]+w, osA[2]+w), 
+                (osA[0], osA[1], osA[2]), (osA[0]+w[0], osA[1], osA[2]), 
+                (osA[0], osA[1]+w[1], osA[2]), (osA[0]+w[0], osA[1]+w[1], osA[2]), 
+                (osA[0], osA[1], osA[2]+w[2]), (osA[0]+w[0], osA[1], osA[2]+w[2]), 
+                (osA[0], osA[1]+w[1], osA[2]+w[2]), (osA[0]+w[0], osA[1]+w[1], osA[2]+w[2]), 
                 ]
         
         step_trans = 7 / 300 * w
-        step_rot = 5
+        step_rot = np.asarray((1, 1, 5))
         trans_min = step_trans * (t_level - 1)
         trans_max = step_trans * t_level
         rot_min = step_rot * (t_level - 1)
@@ -175,18 +168,18 @@ def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
         
         for i in range(n_samples):
             # random transformation parameters
-            rs_degree = [random.choice((random.uniform(-rot_max, -rot_min), random.uniform(rot_min, rot_max))) for d in range(3)]
+            rs_degree = [random.choice((random.uniform(-rot_max[d], -rot_min[d]), random.uniform(rot_min[d], rot_max[d]))) for d in range(3)]
             rs_radian = [np.deg2rad(r_degree) for r_degree in rs_degree]
-            ts = [random.choice((random.uniform(-trans_max, -trans_min), random.uniform(trans_min, trans_max))) for d in range(3)]
+            ts = [random.choice((random.uniform(-trans_max[d], -trans_min[d]), random.uniform(trans_min[d], trans_max[d]))) for d in range(3)]
                     
-            # transform original images
+            # transform original images meanwhile resample to spacing (1x1x1)
             tform = get_transform_rigid3D(rs_radian+ts, centre_img)
             imgA_trans = resample_volume(imgA, tform, new_spacing=[1., 1., 1.])
             imgB_trans = resample_volume(imgB, tform, new_spacing=[1., 1., 1.])
                         
             # crop patches
-            patchA_trans = imgA_trans[osA[0]:osA[0]+w, osA[1]:osA[1]+w, osA[2]:osA[2]+w]
-            patchB_trans = imgB_trans[osB[0]:osB[0]+w, osB[1]:osB[1]+w, osB[2]:osB[2]+w]
+            patchA_trans = imgA_trans[osA[0]:osA[0]+w[0], osA[1]:osA[1]+w[1], osA[2]:osA[2]+w[2]]
+            patchB_trans = imgB_trans[osB[0]:osB[0]+w[0], osB[1]:osB[1]+w[1], osB[2]:osB[2]+w[2]]
     
             # transform patch coordinates
             coords_trans = transform_coords(np.asarray(coords_ref).tolist(), tform)
@@ -215,7 +208,7 @@ def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
                 'X7_Trans': coords_trans[6][0], 'Y7_Trans': coords_trans[6][1], 'Z7_Trans': coords_trans[6][2], 
                 'X8_Trans': coords_trans[7][0], 'Y8_Trans': coords_trans[7][1], 'Z8_Trans': coords_trans[7][2], 
                 'Displacement': dist, 
-                'RelativeDisplacement': dist/w,
+                'RelativeDisplacement': dist/w.mean(),
                 'Tx': ts[0], 'Ty': ts[1], 'Tz': ts[2], 
                 'AngleDegreeX': rs_degree[0], 'AngleDegreeY': rs_degree[1], 'AngleDegreeZ': rs_degree[2], 
                 'AngleRadX': rs_radian[0], 'AngleRadY': rs_radian[1], 'AngleRadZ': rs_radian[2], 
@@ -225,12 +218,7 @@ def make_patches(img_root, target_root, fold=1, t_level=1, n_samples=10,
             # save volumes
             sitk.WriteImage(patchA_trans, f'{tardirA}/patient_{f_name}_{i}_T.mhd')
             sitk.WriteImage(patchB_trans, f'{tardirB}/patient_{f_name}_{i}_T.mhd')
-            
-            # display patch outline in original image
-            if display is not None and cnt_disp < display:
-                pass
-                cnt_disp += 1
-    
+                
     df.to_csv(f'{target_root}/fold{fold}/patch_tlevel{t_level}/info_{mode}.csv')
 
 # %%
@@ -247,12 +235,10 @@ if __name__ == '__main__':
                     fold=f,
                     t_level=i,
                     n_samples=10,
-                    mode='test',
-                    display=None)
+                    mode='test')
 #        make_patches(
 #                img_root='./Datasets/Balvan_1to4tiles', 
 #                target_root='./Datasets/RIRE_patches',
 #                fold=1,
 #                t_level=i,
-#                mode='train',
-#                display=5)
+#                mode='train')

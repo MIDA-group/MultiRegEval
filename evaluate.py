@@ -14,7 +14,8 @@ from skimage import exposure
 
 # self-defined functions
 from utils.make_eliceiri_patches import dist_coords, tform_centred
-from mi import register_mi
+#from mi import register_mi
+from mi_ms import register_mi_ms
 from sift import register_sift
 import sys
 sys.path.append(os.path.abspath("./alpha_amd"))
@@ -183,7 +184,8 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
             if 'MI' in method:
                 # register
                 try:
-                    img_rec, field = register_mi(img_src, img_tar, n_res=n_mi_res)
+#                    img_rec, field = register_mi(img_src, img_tar, n_res=n_mi_res)
+                    field, _ = register_mi_ms(img_src, img_tar, data_root, n_res=n_mi_res)
                 except:
                     continue
                 rot_radian = float(field[0])

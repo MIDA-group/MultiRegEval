@@ -83,7 +83,7 @@ def make_patches_fake(src_root, tar_root, img_root, real_root, fold=1, n_samples
 #    fold=1
 #    n_samples=10
     
-    w=80 # patch width
+    w = np.asarray((210, 210, 70)) # patch width
 
     _, f_names = split_rire_data(fold)
     f_names.sort()
@@ -98,9 +98,12 @@ def make_patches_fake(src_root, tar_root, img_root, real_root, fold=1, n_samples
         osA = np.floor((sizeA - w) / 2).astype(int)   # upper-left corner of patch
 
         for folder in tqdm(gan_names):
-            vlm = [skio.imread(f'{src_root}/fold{fold}/{folder}/patient{f_name}_z{z}.png', as_grey=True) for
+            # stack back to volume 
+            vlm = [skio.imread(f'{src_root}/fold{fold}/{folder}/patient{f_name}_z{z}.png', True) for
                    z in range(len(glob(f'{src_root}/fold{fold}/{folder}/patient{f_name}_z*.png')))]
             vlm = np.stack(vlm, axis=-1)
+            
+            # cut to original size
             vlm = unpad_sample(vlm, sizeA[0], sizeA[1])
             vlm = np.rollaxis(vlm, -1, 0)
             vlm = sku.img_as_uint(vlm)
@@ -109,7 +112,7 @@ def make_patches_fake(src_root, tar_root, img_root, real_root, fold=1, n_samples
             
             # resample to spacing (1x1x1)
             vlm_resampled = resample_volume(vlm, sitk.Euler3DTransform(), new_spacing=[1., 1., 1.])
-            patchA_ref = vlm_resampled[osA[0]:osA[0]+w, osA[1]:osA[1]+w, osA[2]:osA[2]+w]
+            patchA_ref = vlm_resampled[osA[0]:osA[0]+w[0], osA[1]:osA[1]+w[1], osA[2]:osA[2]+w[2]]
             
             for t_level in range(1, 5):
                 tardir = f'{tar_root}/fold{fold}/patch_tlevel{t_level}/{folder}'
@@ -124,11 +127,11 @@ def make_patches_fake(src_root, tar_root, img_root, real_root, fold=1, n_samples
                     tform_param = df.loc[f'{f_name}_{i}', 
                                          ['AngleRadX', 'AngleRadY', 'AngleRadZ', 'Tx', 'Ty', 'Tz']
                                          ].to_list()
-                    # transform original images
+                    # transform original images meanwhile resample to spacing (1x1x1)
                     tform = get_transform_rigid3D(tform_param, centre_img)
                     vlm_trans = resample_volume(vlm, tform, new_spacing=[1., 1., 1.])
                     # crop patches
-                    patchA_trans = vlm_trans[osA[0]:osA[0]+w, osA[1]:osA[1]+w, osA[2]:osA[2]+w]
+                    patchA_trans = vlm_trans[osA[0]:osA[0]+w[0], osA[1]:osA[1]+w[1], osA[2]:osA[2]+w[2]]
                     sitk.WriteImage(patchA_trans, f'{tardir}/patient_{f_name}_{i}_T.mhd')
 
 # %%

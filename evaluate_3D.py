@@ -22,14 +22,6 @@ import sys
 sys.path.append(os.path.abspath("./alpha_amd"))
 import aamd
 
-# %%
-def tform_centred_rec(radian, translation, center):
-    tform1 = skt.SimilarityTransform(translation=translation)
-    tform2 = skt.SimilarityTransform(translation=center)
-    tform3 = skt.SimilarityTransform(rotation=radian)
-    tform4 = skt.SimilarityTransform(translation=-center)
-    tform = tform4 + tform3 + tform2 + tform1
-    return tform
 
 # %%
 def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b2a', display=None):
@@ -92,8 +84,10 @@ def evaluate_methods(data_root, method, gan_name='', preprocess='nopre', mode='b
     
 
     suffix_src = '_' + os.listdir(dir_src)[0].split('_')[-1]
+    suffix_src = suffix_src.replace('raw', 'mhd')
     name_srcs = set([name[:-len(suffix_src)] for name in os.listdir(dir_src)])
     suffix_tar = '_' + os.listdir(dir_tar)[0].split('_')[-1]
+    suffix_tar = suffix_tar.replace('raw', 'mhd')
     name_tars = set([name[:-len(suffix_tar)] for name in os.listdir(dir_tar)])
     f_names = name_srcs & name_tars
     f_names = list(f_names)
