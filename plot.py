@@ -347,7 +347,10 @@ def plot_success_rate(dataset, plot_method, pre='nopre', fold=1, dark=True):
         ax.set_xlim(left=0, right=225)
     ax.set_ylim(bottom=-0.05, top=1.05)
     
-    ax.set_xlabel('Initial displacement $d_{\mathrm{Init}}$ [px]', fontsize=15, color=label_color)
+    if dataset == 'RIRE':
+        ax.set_xlabel('Initial displacement $d_{\mathrm{Init}}$ [voxel]', fontsize=15, color=label_color)
+    else:
+        ax.set_xlabel('Initial displacement $d_{\mathrm{Init}}$ [px]', fontsize=15, color=label_color)
     ax.set_ylabel('Registration success rate $\lambda$', fontsize=15, color=label_color)
     ax.tick_params(labelsize='large')
 
@@ -407,10 +410,10 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     assert preprocess in ['', 'nopre', 'PCA', 'hiseq'], "preprocess must be in ['', 'nopre', 'PCA', 'hiseq']"
     
     # dataset-specific variables
-    assert dataset in ['Eliceiri', 'Balvan', 'Zurich'], "dataset must be in ['Eliceiri', 'Balvan', 'Zurich']"
+    assert dataset in ['Eliceiri', 'Balvan', 'Zurich', 'RIRE'], "dataset must be in ['Eliceiri', 'Balvan', 'Zurich', 'RIRE']"
 
     root_dir = f'./Datasets/{dataset}_patches'
-    result_dir = f'./Datasets/{dataset}_patches_fake'
+    result_dir = f'./Datasets/{dataset}_slices_fake'if dataset == 'RIRE' else f'./Datasets/{dataset}_patches_fake'
 
 #    gan_names = ['A2A', 'B2B', 
 #                 'cyc_A', 'cyc_B', 'drit_A', 'drit_B', 'p2p_A', 'p2p_B', 'star_A', 'star_B', 'comir']
@@ -443,26 +446,30 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
             ax.scatter(method_row.FID_mean, method_row.Success_aAMD_mean, 
 #                       label=method_row.Index, 
                        c=c, s=12**2, marker='o', alpha=0.6, zorder=2.5)
-            ax.scatter(method_row.FID_mean, method_row.Success_SIFT_mean, 
-#                       label=method_row.Index, 
-                       c=c, s=12**2, marker='X', alpha=0.6, zorder=2.5)
+            if dataset != 'RIRE':
+                ax.scatter(method_row.FID_mean, method_row.Success_SIFT_mean, 
+    #                       label=method_row.Index, 
+                           c=c, s=12**2, marker='X', alpha=0.6, zorder=2.5)
             if dataset != 'Eliceiri':
                 # Error bars
                 ax.errorbar(method_row.FID_mean, method_row.Success_aAMD_mean, 
                             xerr=method_row.FID_STD, yerr=method_row.Success_aAMD_STD, 
                             c=c, capsize=2, alpha=0.3)
-                ax.errorbar(method_row.FID_mean, method_row.Success_SIFT_mean, 
-                            xerr=method_row.FID_STD, yerr=method_row.Success_SIFT_STD, 
-                            c=c, capsize=2, alpha=0.3)
+                if dataset != 'RIRE':
+                    ax.errorbar(method_row.FID_mean, method_row.Success_SIFT_mean, 
+                                xerr=method_row.FID_STD, yerr=method_row.Success_SIFT_STD, 
+                                c=c, capsize=2, alpha=0.3)
             legend1_elements.append(Patch(color=c, label=method_row.Index, alpha=0.6))
             i_row += 1
 #    ax.scatter(df['FID_mean'], df['Success_aAMD_mean'], alpha=0.6)
 #    ax.scatter(df['FID_mean'], df['Success_SIFT_mean'], alpha=0.6)
     
     # un-comment to enable legend
-    if dataset == 'Eliceiri' or dark == True:    
+    if dataset in ['Eliceiri', 'RIRE'] or dark == True:
+#        legend1 = ax.legend(handles=legend1_elements, 
+#                            fontsize=22, loc='center left', bbox_to_anchor=(1.2, 0.5), framealpha=0.0)
         legend1 = ax.legend(handles=legend1_elements, 
-                            fontsize=22, loc='center left', bbox_to_anchor=(1.2, 0.5), framealpha=0.0)
+                            fontsize=22, loc='upper left', ncol=5, bbox_to_anchor=(0., 1.5), framealpha=0.0)
         ax.add_artist(legend1)
     
 #    # FID baselines
@@ -473,13 +480,16 @@ def fid_scatter(dataset, preprocess='nopre', dark=True):
     
     # 2nd legend
     # un-comment to enable legend
-    if dataset == 'Eliceiri' or dark == True:    
+    if dataset in ['Eliceiri', 'RIRE'] or dark == True:
         legend2_elements = [Line2D([],[], linewidth=0, marker='o', markersize=12, c='grey', label='aAMD'),
-                            Line2D([],[], linewidth=0, marker='X', markersize=12, c='grey', label='SIFT'),
+#                            Line2D([],[], linewidth=0, marker='X', markersize=12, c='grey', label='SIFT'),
 #                            baselineA, 
 #                            baselineB,
                             ]
-        ax.legend(handles=legend2_elements, fontsize=22, loc='center left', bbox_to_anchor=(1.5, 0.5), framealpha=0.0)
+        if dataset == 'Eliceiri':
+            legend2_elements += [Line2D([],[], linewidth=0, marker='X', markersize=12, c='grey', label='SIFT')]
+#        ax.legend(handles=legend2_elements, fontsize=22, loc='center left', bbox_to_anchor=(1.5, 0.5), framealpha=0.0)
+        ax.legend(handles=legend2_elements, fontsize=22, loc='upper right', ncol=1, bbox_to_anchor=(0., 1.5), framealpha=0.0)
     
     ax.set_ylim(bottom=-0.05, top=1.05)
     ax.set_xlabel('Fréchet Inception Distance ($FID$)', fontsize=15, color=label_color)
