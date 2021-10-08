@@ -85,7 +85,7 @@ cd ../CoMIR/
 
 ### Evaluate registration performance
 
-Run  `python evaluate.py -h` to see the options.
+Run  `python evaluate.py -h` or `python evaluate_3D.py -h`to see the options.
 
 
 
@@ -132,4 +132,6 @@ Please consider citing our paper and dataset if you find the code useful for you
 - [StarGANv2](https://github.com/clovaai/stargan-v2)
 - [CoMIR](https://github.com/MIDA-group/CoMIR)
 - [alpha-AMD](https://github.com/MIDA-group/py_alpha_amd_release)
+- [VoxelMorph](https://github.com/voxelmorph/voxelmorph/tree/6bc2e0cfe69e46626421c071a677e42acaadcbbd)
+- [CurveAlign](https://github.com/uw-loci/shg_he_registration)
 
