@@ -4,7 +4,7 @@
 
 Code of the paper *[Is Image-to-Image Translation the Panacea for Multimodal Image Registration? A Comparative Study](https://arxiv.org/abs/2103.16262)*
 
-Open-access data: *[Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/4587903)*
+Open-access data: *[Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/5557568)*
 
 ## Overview
 
@@ -120,7 +120,7 @@ Please consider citing our paper and dataset if you find the code useful for you
   year = {2021},
   month = apr,
   publisher = {{Zenodo}},
-  doi = {10.5281/zenodo.4587903},
+  doi = {10.5281/zenodo.5557568},
   language = {eng}
 }
 ```
