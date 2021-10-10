@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat)](./LICENSE) [![](https://img.shields.io/badge/python-3.6+-blue.svg?style=flat)](https://www.python.org/download/releases/3.6.0/) [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu) 
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat)](./LICENSE) [![](https://img.shields.io/badge/python-3.6+-blue.svg?style=flat)](https://www.python.org/download/releases/3.6.0/) [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5557568.svg)](https://doi.org/10.5281/zenodo.5557568)
 
 # Evaluation Framework for Multimodal Biomedical Image Registration Methods
 

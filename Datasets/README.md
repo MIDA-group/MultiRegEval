@@ -1,6 +1,8 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5557568.svg)](https://doi.org/10.5281/zenodo.5557568)
+
 # Datasets
 
-Open-access evaluation data: [Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/4587903)
+Open-access evaluation data: [Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/5557568)
 
 
 
@@ -28,9 +30,8 @@ For the Histological data, to avoid too easy registration relying on the circula
 - Modality A: Second Harmonic Generation (SHG)
 - Modality B: Bright-Field (BF)
 
-------
 
-The evaluation set created from the above [three publicly available datasets](#data-sources) consists of images undergone 4 levels of (rigid) transformations of increasing size of displacement. The level of transformations is determined by the size of the rotation angle θ and the displacement tx & ty, detailed in the table. Each image sample is transformed exactly once at each transformation level so that all levels have the same number of samples. 
+The evaluation set created from the above [three publicly available 2D datasets](#data-sources) consists of images undergone 4 levels of (rigid) transformations of increasing size of displacement. The level of transformations is determined by the size of the rotation angle θ and the displacement tx & ty, detailed in the table. Each image sample is transformed exactly once at each transformation level so that all levels have the same number of samples. 
 
 <table align="center">
   <caption style="text-align:center">Transformation levels in evaluation sets</caption>
@@ -74,8 +75,24 @@ The evaluation set created from the above [three publicly available datasets](#d
 </tbody>
 </table>
 
+------
 
-In total, it contains 864 image pairs created from Zurich dataset, 5040 image pairs created from the Cytological dataset, and 536 image pairs created from the Histological dataset. Each image pair consists of a reference patch I<sub>Ref</sub> and its corresponding initial transformed patch I<sub>Init</sub> in both modalities (see [paper](https://arxiv.org/abs/2103.16262) for examples), along with the ground-truth transformation parameters to recover it.
+### Radiological dataset
+
+The Radiological dataset is divided into 3 sub-groups by patient IDs: \{109, 106, 003, 006\}, \{108, 105, 007, 001\}, \{107, 102, 005, 009\}. Since the Radiological dataset is non-isotropic (and also of varying resolution), it is resampled using B-spline interpolation to 1 mm<sup>3</sup> cubic voxels, taking explicit care to not resample twice; displaced volumes are transformed and resampled in one step. 
+
+- Modality A: T1-weighted MRI
+- Modality B: T2-weighted MRI
+
+(Run [`make_rire_patches.py`](../utils/make_rire_patches.py) to generate the sub-volumes.)
+
+Reference sub-volumes of size 210x210x70 voxels are cropped directly from centres of the (non-displaced) resampled volumes. 
+Similarly as for the aforementioned 2D datasets, random (uniformly-distributed) transformations are composed of rotations θx, θy ∈ [-4, 4] degrees around the x- and y-axes, rotation θz ∈ [-20, 20] degrees around the z-axis, translations tx, ty ∈ [-19.6, 19.6]  voxels in x and y directions and translation tz ∈ [-6.5, 6.5]  voxels in z direction. 
+40 rigid transformations of increasing sizes of displacement are applied to each volume. Transformed sub-volumes, of size 210x210x70 voxels, are cropped from centres of the transformed and resampled volumes. 
+
+------
+
+In total, it contains 864 image pairs created from Zurich dataset, 5040 image pairs created from the Cytological dataset, 536 image pairs created from the Histological dataset, and metadata with scripts to create the 480 volume pairs from the Radiological dataset. Each image pair consists of a reference patch I<sub>Ref</sub> and its corresponding initial transformed patch I<sub>Init</sub> in both modalities (see [paper](https://arxiv.org/abs/2103.16262) for examples), along with the ground-truth transformation parameters to recover it.
 
 
 
@@ -107,6 +124,24 @@ In the `*.zip` files, each row in `{Zurich,Balvan}_patches/fold[1-3]/patch_tleve
 - AngleDegree: randomly generated rotation in degrees to synthesise the transformed patch I<sub>Init</sub>
 - AngleRad: randomly generated rotation in radian to synthesise the transformed patch I<sub>Init</sub>
 
+In addition, each row in `RIRE_patches/fold[1-3]/patch_tlevel[1-4]/info_test.csv` has following columns:
+
+- Z1_Ref: z-coordinate of upper left corner of reference patch I<sub>Ref</sub>
+- Z2_Ref: z-coordinate of lower left corner of reference patch I<sub>Ref</sub>
+- Z3_Ref: z-coordinate of lower right corner of reference patch I<sub>Ref</sub>
+- Z4_Ref: z-coordinate of upper right corner of reference patch I<sub>Ref</sub>
+- Z1_Trans: z-coordinate of upper left corner of transformed patch I<sub>Init</sub>
+- Z2_Trans: z-coordinate of lower left corner of transformed patch I<sub>Init</sub>
+- Z3_Trans: z-coordinate of lower right corner of transformed patch I<sub>Init</sub>
+- Z4_Trans: z-coordinate of upper right corner of transformed patch I<sub>Init</sub>
+- (...and similarly, coordinates of the 5th-8th corners)
+- Tz: randomly generated translation in z direction to synthesise the transformed patch I<sub>Init</sub>
+- AngleDegreeX: randomly generated rotation around X-axis in degrees to synthesise the transformed patch I<sub>Init</sub>
+- AngleRadX: randomly generated rotation around X-axis in radian to synthesise the transformed patch I<sub>Init</sub>
+- AngleDegreeY: randomly generated rotation around Y-axis in degrees to synthesise the transformed patch I<sub>Init</sub>
+- AngleRadY: randomly generated rotation around Y-axis in radian to synthesise the transformed patch I<sub>Init</sub>
+- AngleDegreeZ: randomly generated rotation around Z-axis in degrees to synthesise the transformed patch I<sub>Init</sub>
+- AngleRadZ: randomly generated rotation around Z-axis in radian to synthesise the transformed patch I<sub>Init</sub>
 
 
 ## Naming convention
@@ -134,6 +169,15 @@ Example: `PNT1A_do_1_f15_02_01_T.png` indicates the **Transformed** patch of the
 ```
 
 Example: `1B_A4_T.tif` indicates the **Transformed** patch cut from the image with ID `1B_A4`.
+
+### Radiological data
+
+```
+patient_{ID}_{iTransform}_T.mhd
+patient_{ID}_R.mhd
+```
+
+Example: `patient_003_8_T.mhd` indicates the sub-volume **Transformed** with the **8th random transformation** cut from the volume with patient ID `003`; `patient_003_R.mhd` indicates the **Reference** sub-volume the volume with patient ID `003`.
 
 
 
@@ -186,7 +230,7 @@ python ./utils/prepare_Eliceiri.py
 python ./utils/make_eliceiri_patches.py
 ```
 
-### Medical data
+### Radiological data
 
 ```bash
 # prepare training data for I2I translation
@@ -237,4 +281,5 @@ Please consider citing our paper if you find this dataset helpful.
 - Zurich data: [Near-Infrared and RGB images](https://sites.google.com/site/michelevolpiresearch/data/zurich-dataset)
 - Cytological data: [Quantitative Phase Images (QPI)](https://zenodo.org/record/2601562) and [Fluorescence Images](https://zenodo.org/record/4531900)
 - Histological data: [SHG and BF images](https://zenodo.org/record/4550300)
+- Radiological data: [RIRE Dataset](https://www.insight-journal.org/rire/download_data.php)
 
