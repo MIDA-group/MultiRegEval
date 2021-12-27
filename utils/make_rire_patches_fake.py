@@ -88,7 +88,7 @@ def make_patches_fake(src_root, tar_root, img_root, real_root, fold=1, n_samples
     _, f_names = split_rire_data(fold)
     f_names.sort()
     
-    gan_names = os.listdir(f'{src_root}/fold{fold}/')
+    gan_names = [os.path.basename(p) for p in glob(f'{src_root}/fold{fold}/*')]
     
     for f_name in f_names:
         imgA_ori = sitk.ReadImage(f"{img_root}/patient_{f_name}/mr_T1/patient_{f_name}_mr_T1.mhd")
