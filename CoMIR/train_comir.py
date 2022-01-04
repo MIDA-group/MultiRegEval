@@ -336,11 +336,11 @@ class ImgAugTransform:
                 iaa.Sometimes(
                     0.5,
                     iaa.GaussianBlur(sigma=(0, 2.0))),
-                iaa.CenterCropToFixedSize(256,256),
+                iaa.CenterCropToFixedSize(128,128),
             ])
         else:
             self.aug = iaa.Sequential([
-                iaa.CropToFixedSize(256,256),
+                iaa.CropToFixedSize(128,128),
             ])
 
     def __call__(self, img):
