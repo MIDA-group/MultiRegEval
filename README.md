@@ -1,8 +1,9 @@
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat)](./LICENSE) [![](https://img.shields.io/badge/python-3.6+-blue.svg?style=flat)](https://www.python.org/download/releases/3.6.0/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5557568.svg)](https://doi.org/10.5281/zenodo.5557568)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat)](./LICENSE) [![](https://img.shields.io/badge/python-3.6+-blue.svg?style=flat)](https://www.python.org/download/releases/3.6.0/) [![DOI](https://img.shields.io/badge/DOI-10.1371%2Fjournal.pone.0276196-%23CE00A8?style=flat)](https://doi.org/10.1371/journal.pone.0276196) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5557568.svg)](https://doi.org/10.5281/zenodo.5557568)
 
 # Evaluation Framework for Multimodal Biomedical Image Registration Methods
 
-Code of the paper *[Is Image-to-Image Translation the Panacea for Multimodal Image Registration? A Comparative Study](https://arxiv.org/abs/2103.16262)*
+Code of the paper *[Is Image-to-Image Translation the Panacea for Multimodal Image Registration? A Comparative Study](https://doi.org/10.1371/journal.pone.0276196)*
+([`arXiv`](https://arxiv.org/abs/2103.16262))
 
 Open-access data: *[Datasets for Evaluation of Multimodal Image Registration](https://zenodo.org/record/5557568)*
 
@@ -105,13 +106,15 @@ Please consider citing our paper and dataset if you find the code useful for you
   title = {Is {{Image}}-to-{{Image Translation}} the {{Panacea}} for {{Multimodal Image Registration}}? {{A Comparative Study}}},
   shorttitle = {Is {{Image}}-to-{{Image Translation}} the {{Panacea}} for {{Multimodal Image Registration}}?},
   author = {Lu, Jiahao and {\"O}fverstedt, Johan and Lindblad, Joakim and Sladoje, Nata{\v s}a},
-  year = {2021},
-  month = mar,
-  archiveprefix = {arXiv},
-  eprint = {2103.16262},
-  eprinttype = {arxiv},
-  journal = {arXiv:2103.16262 [cs, eess]},
-  primaryclass = {cs, eess}
+  year = {2022},
+  month = nov,
+  journal = {PLOS ONE},
+  volume = {17},
+  number = {11},
+  pages = {e0276196},
+  issn = {1932-6203},
+  doi = {10.1371/journal.pone.0276196},
+  langid = {english}
 }
 
 @datasettype{luDatasetsEvaluationMultimodal2021,
