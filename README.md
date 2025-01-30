@@ -72,7 +72,7 @@ cd ../stargan-v2/
 ./predict_rire.sh
 ```
 
-- CoMIR: run [`commands_train.sh`](./COMIR/commands_train.sh) and [`predict_all.sh`](./CoMIR/predict_all.sh)
+- CoMIR: run [`commands_train.sh`](./CoMIR/commands_train.sh) and [`predict_all.sh`](./CoMIR/predict_all.sh)
 
 ```bash
 # train and test (for all datasets)
